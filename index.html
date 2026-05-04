@@ -1,0 +1,1344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>Mailchimp Marketing Dashboard — Zero-State Prototype</title>
+<style>
+  /* ============================================================
+     STRICT Mailchimp design system tokens
+     ============================================================ */
+  :root {
+    --mc-yellow: #FFE01B;
+    --mc-teal: #007C89;
+    --mc-teal-hover: #006670;
+    --mc-teal-soft-bg: #e9f6f6;
+    --mc-text: #241C15;
+    --mc-text-secondary: #6A737C;
+    --mc-text-muted: #9aa3ab;
+    --mc-border: #E8EAED;
+    --mc-bg: #ffffff;
+    --mc-page: #ffffff;
+    --mc-success-bg: #D1E9CE;
+    --mc-success-text: #007A3D;
+    --mc-warning-bg: #FADCD4;
+    --mc-warning-text: #C83B27;
+    --mc-chart-blue: #0070D2;
+    --mc-chart-purple: #A78BFA;
+    --mc-chart-pink: #EC4899;
+    --mc-chart-teal: #00B2A9;
+    --mc-prev-period: #D13438;
+    --mc-up: #1AAB68;
+    --mc-down: #D13438;
+    --mc-ghost: #E8EAED;
+    --shadow-card: 0 1px 2px rgba(36,28,21,0.04);
+
+    /* Round-2 sample/benchmark visual treatment */
+    --sample-text: #9aa3ab;       /* Muted gray for sample numbers */
+    --sample-text-strong: #7a8088; /* Slightly darker for sample big numbers */
+    --sample-stroke: #c8ccd1;     /* Gray for sample chart strokes */
+    --bench-subtle-teal: #7fb8b9; /* Desaturated teal for benchmarks */
+    --bench-soft-bg: #eef6f6;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Helvetica Neue", -apple-system, Helvetica, Arial, sans-serif;
+    color: var(--mc-text);
+    background: var(--mc-page);
+    font-size: 14px;
+    line-height: 1.45;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ============================================================
+     Concept selector chrome
+     ============================================================ */
+  .concept-bar {
+    background: #fff;
+    border-bottom: 1px solid var(--mc-border);
+    padding: 14px 32px;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .concept-bar-title { font-weight: 600; margin-right: 16px; font-size: 14px; }
+  .concept-bar-title small { color: var(--mc-text-secondary); font-weight: 400; margin-left: 8px; }
+  .concept-tabs { display: flex; gap: 8px; flex: 1; }
+  .concept-tab {
+    padding: 8px 16px;
+    border-radius: 6px;
+    background: #f6f6f4;
+    color: var(--mc-text);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--mc-border);
+    transition: all 0.12s;
+    user-select: none;
+  }
+  .concept-tab:hover { background: var(--mc-teal-soft-bg); border-color: var(--mc-teal); }
+  .concept-tab.active { background: var(--mc-teal); color: #fff; border-color: var(--mc-teal); }
+  .concept-meta { font-size: 12px; color: var(--mc-text-secondary); }
+
+  .concept-legend {
+    background: #fff;
+    border: 1px solid var(--mc-border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin: 16px 32px 0;
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    box-shadow: var(--shadow-card);
+  }
+  .concept-legend-tag { width: 4px; height: 32px; border-radius: 2px; background: var(--mc-teal); flex-shrink: 0; }
+  .concept-legend-text strong { font-size: 14px; display: block; }
+  .concept-legend-text span { font-size: 12px; color: var(--mc-text-secondary); }
+  .concept-legend-bsci {
+    margin-left: auto;
+    font-size: 11px;
+    color: var(--mc-text-secondary);
+    max-width: 480px;
+    line-height: 1.45;
+  }
+  .concept-legend-bsci b { color: var(--mc-text); font-weight: 600; }
+
+  /* ============================================================
+     Sample-mode banner — Mailchimp yellow accent
+     ============================================================ */
+  .sample-banner {
+    background: #FFFDF0;
+    border-top: 1px solid var(--mc-border);
+    border-bottom: 1px solid var(--mc-border);
+    border-left: 4px solid var(--mc-yellow);
+    padding: 12px 32px;
+    font-size: 13px;
+    display: none;
+    justify-content: space-between;
+    align-items: center;
+    color: var(--mc-text);
+  }
+  .sample-banner strong { font-weight: 600; }
+  .sample-banner-toggle {
+    background: #fff;
+    border: 1px solid var(--mc-border);
+    border-radius: 6px;
+    overflow: hidden;
+    display: inline-flex;
+    font-size: 12px;
+  }
+  .sample-banner-toggle span {
+    padding: 6px 12px;
+    cursor: pointer;
+    color: var(--mc-text-secondary);
+    font-weight: 500;
+  }
+  .sample-banner-toggle span.active { background: var(--mc-teal); color: #fff; }
+
+  /* ============================================================
+     Mailchimp shell
+     ============================================================ */
+  .mc-shell { display: flex; min-height: calc(100vh - 56px); background: #fff; }
+  .mc-sidebar {
+    width: 232px;
+    background: #fff;
+    border-right: 1px solid var(--mc-border);
+    padding: 0 0 24px;
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  .mc-sidebar .yellow-bar { height: 4px; background: var(--mc-yellow); }
+  .mc-logo {
+    padding: 14px 20px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mc-logo-mark {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--mc-yellow);
+    display: flex; align-items: center; justify-content: center;
+    position: relative;
+    overflow: hidden;
+  }
+  /* Freddie chimp simplified mark */
+  .mc-logo-mark::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f3c200 0%, #e2a000 70%, #c98800 100%);
+  }
+  .mc-logo-mark::after {
+    content: "";
+    position: absolute;
+    width: 18px; height: 14px;
+    background: #241C15;
+    border-radius: 60% 60% 50% 50% / 70% 70% 30% 30%;
+    top: 9px; left: 7px;
+    box-shadow: 4px 0 0 -1px #241C15;
+  }
+  .mc-create-btn {
+    margin: 0 16px 16px;
+    border: 1px solid var(--mc-text);
+    border-radius: 999px;
+    padding: 8px 14px;
+    text-align: center;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    background: #fff;
+    color: var(--mc-text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    justify-content: center;
+  }
+  .mc-create-btn::before { content: "✎"; opacity: 0.7; }
+  .mc-nav { display: flex; flex-direction: column; padding: 0 8px; flex: 1; }
+  .mc-nav a {
+    text-decoration: none;
+    color: var(--mc-text);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .mc-nav a:hover { background: #f4f4f3; }
+  .mc-nav a.active { background: #f0efed; font-weight: 600; }
+  .mc-nav a .badge-new { background: var(--mc-success-bg); color: var(--mc-success-text); font-size: 10px; padding: 1px 6px; border-radius: 3px; margin-left: auto; font-weight: 600; }
+  .mc-nav a .icon { width: 16px; text-align: center; opacity: 0.8; font-size: 14px; }
+  .mc-nav-sub { padding-left: 24px; font-size: 13px; }
+  .mc-nav-sub a { padding: 6px 12px; font-size: 13px; }
+
+  .csm-nudge {
+    margin: 16px 12px 0;
+    padding: 14px 12px;
+    border-top: 1px solid var(--mc-border);
+    font-size: 11px;
+    color: var(--mc-text-secondary);
+    line-height: 1.5;
+  }
+  .csm-nudge-title { font-weight: 600; color: var(--mc-text); display: block; margin-top: 4px; font-size: 12px; }
+  .csm-nudge-cta {
+    display: block;
+    margin-top: 10px;
+    padding: 7px 12px;
+    background: #fff;
+    border: 1px solid var(--mc-text);
+    border-radius: 6px;
+    text-align: center;
+    color: var(--mc-text);
+    font-size: 12px;
+    font-weight: 500;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  .csm-nudge-tag { color: var(--mc-prev-period); font-weight: 600; font-size: 10px; }
+  .csm-nudge-tag::before { content: "● "; }
+
+  /* ============================================================
+     Top bar
+     ============================================================ */
+  .mc-main { flex: 1; padding: 0; min-width: 0; }
+  .mc-topbar {
+    height: 52px;
+    border-bottom: 1px solid var(--mc-border);
+    display: flex;
+    align-items: center;
+    padding: 0 32px;
+    background: #fff;
+  }
+  .mc-search {
+    flex: 1;
+    max-width: 480px;
+    margin: 0 auto;
+    background: #f6f6f4;
+    border-radius: 6px;
+    padding: 7px 14px;
+    font-size: 13px;
+    color: var(--mc-text-muted);
+  }
+  .mc-search::before { content: "🔍 "; opacity: 0.6; }
+  .mc-help-btn {
+    background: var(--mc-text);
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    position: relative;
+  }
+  .mc-help-btn::after {
+    content: "1";
+    position: absolute;
+    top: -4px; right: -4px;
+    background: var(--mc-down);
+    color: #fff;
+    font-size: 10px;
+    padding: 1px 5px;
+    border-radius: 999px;
+  }
+  .mc-content { padding: 28px 32px; max-width: 1280px; }
+  .mc-page-title { font-size: 28px; font-weight: 600; margin: 0 0 22px; }
+
+  /* ============================================================
+     AI banner — Mailchimp tokens
+     ============================================================ */
+  .ai-banner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--mc-teal-soft-bg);
+    border: 1px solid #c8e3e3;
+    border-radius: 8px;
+    padding: 14px 18px;
+    margin-bottom: 20px;
+    gap: 16px;
+  }
+  .ai-banner-text { display: flex; flex-direction: column; gap: 2px; font-size: 13px; }
+  .ai-banner-text strong { font-size: 14px; color: var(--mc-text); }
+  .ai-banner-text em { font-style: normal; color: var(--mc-text-secondary); }
+  .snowflake { color: var(--mc-teal); font-weight: 700; }
+  .pill.beta {
+    display: inline-block;
+    background: var(--mc-warning-bg);
+    color: var(--mc-warning-text);
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+
+  /* ============================================================
+     Filter row
+     ============================================================ */
+  .filter-row {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+  .filter-field { display: flex; flex-direction: column; gap: 4px; min-width: 160px; }
+  .filter-label { font-size: 11px; color: var(--mc-text-secondary); }
+  .filter-input {
+    border: 1px solid var(--mc-border);
+    border-radius: 6px;
+    padding: 7px 10px;
+    background: #fff;
+    font-size: 13px;
+    color: var(--mc-text);
+    min-height: 32px;
+  }
+  .filter-input.teal-border { border-color: var(--mc-teal); }
+  .bot-filter { font-size: 12px; color: var(--mc-text-secondary); display: flex; align-items: center; gap: 6px; padding-bottom: 7px; }
+  .bot-filter::before { content: "●"; color: var(--mc-teal); }
+
+  /* ============================================================
+     Tabs
+     ============================================================ */
+  .tabs-row { border-bottom: 1px solid var(--mc-border); display: flex; gap: 24px; margin-bottom: 20px; }
+  .tab { padding: 10px 0; font-size: 13px; color: var(--mc-text-secondary); cursor: pointer; border-bottom: 2px solid transparent; }
+  .tab.active { color: var(--mc-text); font-weight: 600; border-bottom-color: var(--mc-teal); }
+
+  /* ============================================================
+     Cards
+     ============================================================ */
+  .card {
+    background: #fff;
+    border: 1px solid var(--mc-border);
+    border-radius: 8px;
+    padding: 22px 24px;
+    margin-bottom: 16px;
+    box-shadow: var(--shadow-card);
+    position: relative;
+  }
+  .card-h {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 16px;
+    gap: 16px;
+  }
+  .card-h-left { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+  .card-h-right { display: flex; align-items: center; gap: 10px; flex-shrink: 0; flex-wrap: wrap; justify-content: flex-end; }
+  .card-title { font-size: 16px; font-weight: 600; margin: 0; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .card-subtitle { font-size: 12px; color: var(--mc-text-secondary); }
+
+  .pill {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .pill.industry {
+    background: var(--bench-soft-bg);
+    color: var(--bench-subtle-teal);
+    border: 1px solid #d4e7e7;
+  }
+  .pill.sample {
+    background: #f1f1ef;
+    color: var(--sample-text-strong);
+    border: 1px solid #e0e0dc;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .pill.success { background: var(--mc-success-bg); color: var(--mc-success-text); }
+  .pill.muted { background: #f1f1ef; color: var(--mc-text-secondary); }
+
+  .card-sample-tag { position: absolute; top: 16px; right: 16px; }
+
+  /* ============================================================
+     PER-WIDGET CTA — triple animation
+     1) Load shimmer  2) Idle pulse halo  3) Hover arrow slide
+     ============================================================ */
+  @keyframes ctaPulseHalo {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(0, 124, 137, 0); }
+    8% { box-shadow: 0 0 0 6px rgba(0, 124, 137, 0.18); }
+    20% { box-shadow: 0 0 0 0 rgba(0, 124, 137, 0); }
+  }
+  @keyframes ctaShimmer {
+    0% { transform: translateX(-120%); }
+    100% { transform: translateX(220%); }
+  }
+  .ctx-cta {
+    background: var(--mc-teal);
+    color: #fff;
+    padding: 9px 16px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    border: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    position: relative;
+    overflow: hidden;
+    /* Idle pulse halo */
+    animation: ctaPulseHalo 6s ease-in-out infinite;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .ctx-cta:hover { background: var(--mc-teal-hover); animation-play-state: paused; }
+  .ctx-cta::after {
+    content: "→";
+    display: inline-block;
+    transition: transform 0.18s ease-out;
+  }
+  .ctx-cta:hover::after { transform: translateX(4px); }
+  /* Load-time shimmer overlay */
+  .ctx-cta::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0;
+    width: 60%;
+    height: 100%;
+    background: linear-gradient(110deg, transparent 0%, rgba(255,255,255,0) 30%, rgba(255,255,255,0.45) 50%, rgba(255,255,255,0) 70%, transparent 100%);
+    transform: translateX(-120%);
+    pointer-events: none;
+    animation: ctaShimmer 1.4s ease-out 0.6s 1;
+  }
+
+  .ctx-cta-ghost {
+    background: #fff;
+    color: var(--mc-teal);
+    border: 1px solid var(--mc-teal);
+    padding: 8px 15px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+    transition: background 0.2s;
+  }
+  .ctx-cta-ghost:hover { background: var(--mc-teal-soft-bg); }
+  .ctx-cta-ghost::after {
+    content: "→";
+    transition: transform 0.18s ease-out;
+  }
+  .ctx-cta-ghost:hover::after { transform: translateX(4px); }
+
+  .right-meta { font-size: 12px; color: var(--mc-text-secondary); display: flex; gap: 12px; align-items: center; }
+  .toggle-group { display: inline-flex; gap: 0; border: 1px solid var(--mc-border); border-radius: 6px; overflow: hidden; }
+  .toggle-group span { padding: 4px 10px; font-size: 12px; cursor: pointer; }
+  .toggle-group span.active { background: #f1f1ef; font-weight: 600; }
+
+  /* ============================================================
+     Metric grid
+     ============================================================ */
+  .metrics { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; }
+  .metric { display: flex; flex-direction: column; gap: 4px; }
+  .metric-label {
+    font-size: 12px;
+    color: var(--mc-text-secondary);
+    border-bottom: 1px dashed var(--mc-text-muted);
+    padding-bottom: 2px;
+    width: fit-content;
+  }
+  .metric-label .snow { color: var(--mc-teal); margin-right: 4px; font-weight: 700; }
+  .metric-value { font-size: 30px; font-weight: 700; line-height: 1.2; color: var(--mc-text); }
+  .metric-value.muted { color: var(--mc-text-muted); font-weight: 400; }
+  /* Round-2: sample numbers in muted gray */
+  .metric-value.sample { color: var(--sample-text-strong); font-weight: 600; }
+  .metric-delta { font-size: 12px; color: var(--mc-text-muted); display: flex; gap: 8px; align-items: center; }
+  .metric-delta.up { color: var(--mc-up); }
+  .metric-delta.down { color: var(--mc-down); }
+  .metric-delta.up::before { content: "▲ "; }
+  .metric-delta.down::before { content: "▼ "; }
+  /* Sample delta — gray */
+  .metric-delta.sample { color: var(--sample-text); }
+  .metric-delta.sample::before { content: "▲ "; color: var(--sample-text); }
+
+  .bench-row {
+    display: flex; align-items: baseline; gap: 6px; flex-wrap: wrap;
+    margin-top: 2px;
+  }
+  .bench-label { font-size: 11px; color: var(--mc-text-secondary); }
+  .bench-value { font-size: 13px; font-weight: 600; color: var(--bench-subtle-teal); }
+
+  /* Bench meter — Mailchimp pill colors only */
+  .bench-meter {
+    margin-top: 8px;
+    height: 4px;
+    background: linear-gradient(to right,
+      var(--mc-warning-bg) 0%,
+      var(--mc-warning-bg) 25%,
+      #fbe9c4 25%,
+      #fbe9c4 50%,
+      var(--mc-success-bg) 50%,
+      var(--mc-success-bg) 75%,
+      #b9e4bf 75%,
+      #b9e4bf 100%);
+    border-radius: 2px;
+    position: relative;
+  }
+  .bench-meter::after {
+    content: "";
+    position: absolute;
+    top: -3px;
+    width: 2px; height: 10px;
+    background: var(--mc-text);
+  }
+  .bench-meter.poor::after { left: 12%; }
+  .bench-meter.fair::after { left: 38%; }
+  .bench-meter.good::after { left: 64%; }
+  .bench-meter.excellent::after { left: 88%; }
+
+  .perf-tag {
+    font-size: 10px;
+    text-transform: uppercase;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+  .perf-tag.excellent { background: var(--mc-success-bg); color: var(--mc-success-text); }
+  .perf-tag.good { background: var(--mc-success-bg); color: var(--mc-success-text); }
+  .perf-tag.fair { background: #fbe9c4; color: #8a6d00; }
+  .perf-tag.poor { background: var(--mc-warning-bg); color: var(--mc-warning-text); }
+
+  .mc-insight-callout {
+    background: var(--bench-soft-bg);
+    border-left: 3px solid var(--bench-subtle-teal);
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    margin-top: 14px;
+    font-size: 12px;
+    color: var(--mc-text);
+    display: flex; gap: 10px; align-items: center;
+    justify-content: space-between;
+  }
+  .mc-insight-callout-text { flex: 1; }
+  .mc-insight-callout strong { color: var(--bench-subtle-teal); }
+
+  /* ============================================================
+     Chips
+     ============================================================ */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+  .chip {
+    background: #fff;
+    border: 1px solid var(--mc-border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    font-size: 12px;
+    color: var(--mc-text);
+    cursor: pointer;
+  }
+  .chip:hover { background: var(--mc-teal-soft-bg); border-color: var(--mc-teal); }
+  .chip::before { content: "✦  "; color: var(--mc-teal); }
+
+  /* ============================================================
+     Charts
+     ============================================================ */
+  .chart-svg-wrap { width: 100%; height: 200px; }
+  .chart-svg-wrap svg { width: 100%; height: 100%; }
+  .chart-side {
+    display: grid;
+    grid-template-columns: 1fr 220px;
+    gap: 24px;
+    align-items: stretch;
+  }
+  .chart-side-rail {
+    border-left: 1px solid var(--mc-border);
+    padding-left: 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .rail-row {
+    display: flex; justify-content: space-between; font-size: 13px; padding: 4px 0;
+    align-items: baseline;
+  }
+  .rail-row .rail-label { color: var(--mc-text-secondary); }
+  .rail-row .rail-value { font-weight: 600; color: var(--mc-text); }
+  .rail-row .rail-value.muted { color: var(--mc-text-muted); font-weight: 400; }
+  .rail-row .rail-value.sample { color: var(--sample-text-strong); font-weight: 600; }
+  .rail-row .rail-bench { font-size: 11px; color: var(--bench-subtle-teal); margin-left: 8px; }
+  .rail-rail-title { font-size: 12px; font-weight: 600; color: var(--mc-text); margin-bottom: 4px; }
+
+  .chart-headline-metric {
+    display: flex;
+    align-items: baseline;
+    gap: 24px;
+    margin-bottom: 8px;
+  }
+  .chart-headline-label {
+    font-size: 12px;
+    color: var(--mc-text-secondary);
+    border-bottom: 1px dashed var(--mc-text-muted);
+    padding-bottom: 2px;
+    width: fit-content;
+  }
+  .chart-headline-value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--mc-text);
+  }
+  .chart-headline-value.muted { color: var(--mc-text-muted); font-weight: 400; }
+  .chart-headline-value.sample { color: var(--sample-text-strong); font-weight: 600; }
+  .chart-headline-bench { font-size: 22px; color: var(--bench-subtle-teal); font-weight: 600; }
+  .chart-headline-delta { font-size: 12px; color: var(--mc-up); }
+  .chart-headline-delta.up::before { content: "▲ "; }
+  .chart-headline-delta.sample { color: var(--sample-text); }
+  .chart-headline-delta.sample::before { content: "▲ "; color: var(--sample-text); }
+
+  .legend-line { display: flex; gap: 18px; font-size: 11px; color: var(--mc-text-secondary); margin-top: 8px; flex-wrap: wrap; }
+  .legend-line .swatch { display: inline-block; width: 14px; height: 2px; vertical-align: middle; margin-right: 4px; }
+  .legend-line .swatch.dotted-red { border-top: 2px dotted var(--mc-prev-period); height: 0; background: transparent; }
+  .legend-line .swatch.dashed-gray { border-top: 1.5px dashed var(--mc-text-muted); height: 0; background: transparent; }
+  .legend-line .swatch.subtle-teal { background: var(--bench-subtle-teal); }
+  .legend-line .swatch.sample-gray { background: var(--sample-stroke); }
+
+  /* ============================================================
+     Conversion funnel
+     ============================================================ */
+  .conv-tabs-row { display: flex; gap: 24px; border-bottom: 1px solid var(--mc-border); margin-bottom: 16px; }
+  .conv-tab { font-size: 13px; padding: 8px 0; color: var(--mc-text-secondary); border-bottom: 2px solid transparent; cursor: pointer; }
+  .conv-tab.active { color: var(--mc-text); font-weight: 600; border-bottom-color: var(--mc-teal); }
+
+  .funnel {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 24px;
+    margin-top: 20px;
+    position: relative;
+  }
+  .funnel-step { display: flex; flex-direction: column; gap: 6px; position: relative; padding-bottom: 18px; }
+  .funnel-label {
+    font-size: 12px;
+    color: var(--mc-text-secondary);
+    border-bottom: 1px dashed var(--mc-text-muted);
+    width: fit-content;
+    padding-bottom: 1px;
+  }
+  .funnel-num { font-size: 24px; font-weight: 700; color: var(--mc-text); display: flex; align-items: baseline; gap: 8px; }
+  .funnel-num small { font-weight: 400; color: var(--mc-text-secondary); font-size: 13px; }
+  .funnel-num.muted { color: var(--mc-text-muted); font-weight: 400; }
+  .funnel-num.sample { color: var(--sample-text-strong); font-weight: 600; }
+  .funnel-num.bench { color: var(--bench-subtle-teal); }
+  .funnel-bar {
+    height: 8px;
+    background: var(--mc-ghost);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 4px;
+  }
+  .funnel-bar-fill { height: 100%; background: var(--mc-chart-blue); border-radius: 4px; }
+  .funnel-bar-fill.bench { background: var(--bench-subtle-teal); }
+  .funnel-bar-fill.sample { background: var(--sample-stroke); }
+  .funnel-dropoff {
+    font-size: 11px;
+    color: var(--mc-text-secondary);
+    position: absolute;
+    bottom: -4px;
+  }
+  .funnel-arrow {
+    position: absolute;
+    right: -16px; top: 32px;
+    color: var(--mc-text-muted); font-size: 14px;
+  }
+
+  /* View switching */
+  .concept-view { display: none; }
+  .concept-view.active { display: block; }
+
+  /* Trophy shelf */
+  .trophy-shelf {
+    display: flex; gap: 10px; flex-wrap: wrap;
+    margin-top: 12px;
+  }
+  .trophy {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 6px 12px; font-size: 12px;
+    border-radius: 999px;
+    background: var(--mc-success-bg);
+    color: var(--mc-success-text);
+    font-weight: 500;
+  }
+  .trophy.locked {
+    background: #f1f1ef;
+    color: var(--mc-text-secondary);
+  }
+  .trophy.locked::before { content: "🔒 "; opacity: 0.6; font-size: 11px; }
+  .trophy.earned::before { content: "✓ "; font-weight: 700; }
+
+  /* Page-load shimmer trigger */
+  .ctx-cta.no-shimmer::before { display: none; }
+</style>
+</head>
+<body>
+
+<!-- ===== Concept selector ===== -->
+<div class="concept-bar">
+  <div class="concept-bar-title">Mailchimp Marketing dashboard zero-state <small>· Pass 1 prototype</small></div>
+  <div class="concept-tabs">
+    <div class="concept-tab active" data-c="B" onclick="setConcept('B')">Concept B · Benchmarks-led</div>
+    <div class="concept-tab" data-c="C" onclick="setConcept('C')">Concept C · Sample-data-led</div>
+  </div>
+  <div class="concept-meta">Persona: Beauty/skincare SMB · 19 contacts · no campaigns · no store</div>
+</div>
+
+<div class="concept-legend">
+  <div class="concept-legend-tag"></div>
+  <div class="concept-legend-text">
+    <strong id="legend-strong">Concept B — Benchmarks-led</strong>
+    <span id="legend-span">Industry medians on every empty widget. Benchmarks render in subtle teal so they read as reference, not real data. One contextual CTA per card.</span>
+  </div>
+  <div class="concept-legend-bsci" id="legend-bsci">
+    <b>Behavioral spine:</b> Reciprocity (Cialdini · Regan 1971) · Social proof (Goldstein/Cialdini 2008) · Curiosity gap (Loewenstein 1994).<br>
+    <b>Steals from:</b> Klaviyo Benchmarks · HubSpot inline industry medians.
+  </div>
+</div>
+
+<div class="sample-banner" id="sample-banner">
+  <div>
+    <strong>Sample mode</strong> · Exploring with <em style="font-style:normal; color: var(--sample-text-strong); font-weight: 600;">grayed-out example data</em> from Aurora Beauty Co — a beauty brand like yours. Connect Shopify or send your first campaign to see your real numbers in full color.
+  </div>
+  <div class="sample-banner-toggle">
+    <span class="active">Sample mode</span>
+    <span>My data</span>
+  </div>
+</div>
+
+<!-- ===== Mailchimp shell ===== -->
+<div class="mc-shell">
+
+  <div class="mc-sidebar">
+    <div class="yellow-bar"></div>
+    <div class="mc-logo"><span class="mc-logo-mark"></span></div>
+    <div class="mc-create-btn">Create</div>
+    <nav class="mc-nav">
+      <a href="#"><span class="icon">🏠</span>Home</a>
+      <a href="#"><span class="icon">📣</span>Campaigns</a>
+      <a href="#"><span class="icon">⚡</span>Automations</a>
+      <a href="#"><span class="icon">💬</span>SMS</a>
+      <a href="#"><span class="icon">📝</span>Forms<span class="badge-new">New</span></a>
+      <a href="#"><span class="icon">👥</span>Audience</a>
+      <a href="#" class="active"><span class="icon">📊</span>Analytics</a>
+      <div class="mc-nav-sub">
+        <a href="#" class="active">Audience analytics</a>
+        <a href="#">Reports</a>
+        <a href="#">Conversion insights<span class="badge-new">New</span></a>
+        <a href="#">Custom reports</a>
+      </div>
+      <a href="#"><span class="icon">🌐</span>Website</a>
+      <a href="#"><span class="icon">📦</span>Content</a>
+      <a href="#"><span class="icon">🔌</span>Integrations</a>
+    </nav>
+    <div class="csm-nudge">
+      <span class="csm-nudge-tag">Time sensitive</span>
+      <span class="csm-nudge-title">Meet your Mailchimp Customer Success Manager</span>
+      Start seeing results today by scheduling a call with a Customer Success Manager.
+      <a href="#" class="csm-nudge-cta">Connect to expert</a>
+    </div>
+  </div>
+
+  <div class="mc-main">
+    <div class="mc-topbar">
+      <div class="mc-search">Search...</div>
+      <div class="mc-help-btn">Live expert help</div>
+    </div>
+
+    <div class="mc-content">
+      <h1 class="mc-page-title">Marketing dashboard</h1>
+
+      <!-- ============================================================
+           CONCEPT B
+           ============================================================ -->
+      <div class="concept-view active" id="view-B">
+
+        <div class="ai-banner">
+          <div class="ai-banner-text">
+            <strong><span class="snowflake">✦</span> Beauty brands like yours earn $0.42 per email sent — you're leaving this on the table <span class="pill beta">Beta</span></strong>
+            <em>Anonymized data from 12,400 beauty/skincare SMBs in your revenue band. Connect Shopify to see your numbers next to peers.</em>
+          </div>
+          <button class="ctx-cta">Connect Shopify</button>
+        </div>
+
+        <div class="filter-row">
+          <div class="filter-field"><span class="filter-label">Audience</span><div class="filter-input teal-border">Collaborators ▾</div></div>
+          <div class="filter-field"><span class="filter-label">Date range</span><div class="filter-input">Last 30 days 📅</div></div>
+          <div class="filter-field"><span class="filter-label">Comparison</span><div class="filter-input">Beauty SMBs · your size ▾</div></div>
+          <div class="filter-field"><span class="filter-label">Filter by message name</span><div class="filter-input">0 messages selected ▾</div></div>
+          <div class="bot-filter">Bot filtering on</div>
+        </div>
+
+        <div class="tabs-row">
+          <div class="tab active">Performance</div>
+          <div class="tab">Compare message performance</div>
+        </div>
+
+        <!-- Monitor performance -->
+        <div class="card">
+          <div class="card-h">
+            <div class="card-h-left">
+              <h3 class="card-title">Monitor performance <span class="pill industry">Industry reference</span></h3>
+              <p class="card-subtitle">Apr 4, 2026 · May 3, 2026 · Yours appears here after first send · Industry data: 12,400 beauty SMBs</p>
+            </div>
+            <div class="card-h-right">
+              <button class="ctx-cta">Send first campaign</button>
+            </div>
+          </div>
+          <div class="metrics">
+            <div class="metric">
+              <span class="metric-label"><span class="snow">✦</span>Total sends</span>
+              <span class="metric-value muted">—</span>
+              <div class="bench-row"><span class="bench-label">Industry median:</span><span class="bench-value">3.2 sends/wk</span></div>
+            </div>
+            <div class="metric">
+              <span class="metric-label"><span class="snow">✦</span>Open rate</span>
+              <span class="metric-value muted">—</span>
+              <div class="bench-row"><span class="bench-label">Industry:</span><span class="bench-value">24.1%</span> <span class="perf-tag good">Good</span></div>
+              <div class="bench-meter good"></div>
+            </div>
+            <div class="metric">
+              <span class="metric-label"><span class="snow">✦</span>Click rate</span>
+              <span class="metric-value muted">—</span>
+              <div class="bench-row"><span class="bench-label">Industry:</span><span class="bench-value">3.8%</span> <span class="perf-tag good">Good</span></div>
+              <div class="bench-meter good"></div>
+            </div>
+            <div class="metric">
+              <span class="metric-label"><span class="snow">✦</span>Unsubscribe rate</span>
+              <span class="metric-value muted">—</span>
+              <div class="bench-row"><span class="bench-label">Industry:</span><span class="bench-value">0.3%</span> <span class="perf-tag excellent">Excellent</span></div>
+              <div class="bench-meter excellent"></div>
+            </div>
+          </div>
+          <div class="mc-insight-callout">
+            <div class="mc-insight-callout-text"><strong>✦ Mailchimp insight</strong> · Beauty brands hit the 24% open rate by emailing 3× per week. Your first send to 15 subscribers will set your starting point.</div>
+          </div>
+          <div class="chips">
+            <div class="chip">What does "Good" mean for skincare specifically?</div>
+            <div class="chip">How do peers grow from 19 to 1,000 contacts?</div>
+            <div class="chip">Show benchmarks for my revenue size</div>
+          </div>
+        </div>
+
+        <!-- Performance over time -->
+        <div class="card">
+          <div class="card-h">
+            <div class="card-h-left">
+              <h3 class="card-title">Performance over time <span class="pill industry">Industry trendline</span></h3>
+              <p class="card-subtitle">Apr 4, 2026 · May 3, 2026 · Beauty SMBs · Median click rate</p>
+            </div>
+            <div class="card-h-right">
+              <span class="right-meta">Metric: <span class="snowflake">✦</span> Click rate ▾</span>
+              <div class="toggle-group"><span class="active">Day</span><span>Week</span><span>Month</span></div>
+              <button class="ctx-cta">Send first campaign</button>
+            </div>
+          </div>
+
+          <div class="chart-side">
+            <div>
+              <div class="chart-headline-metric">
+                <div>
+                  <div class="chart-headline-label">Click rate</div>
+                  <div class="chart-headline-value muted">—</div>
+                </div>
+                <div>
+                  <div class="chart-headline-label">Industry</div>
+                  <div class="chart-headline-bench">3.8%</div>
+                </div>
+              </div>
+
+              <div class="chart-svg-wrap">
+                <svg viewBox="0 0 700 200" preserveAspectRatio="none">
+                  <line x1="0" y1="50" x2="700" y2="50" stroke="#f1f1ef" stroke-width="1"/>
+                  <line x1="0" y1="100" x2="700" y2="100" stroke="#f1f1ef" stroke-width="1"/>
+                  <line x1="0" y1="150" x2="700" y2="150" stroke="#f1f1ef" stroke-width="1"/>
+                  <!-- Industry line in subtle teal -->
+                  <path d="M 0 110 Q 100 105, 200 100 T 400 92 T 600 88 L 700 86" stroke="#7fb8b9" stroke-width="2" fill="none"/>
+                  <!-- Yours placeholder dashed gray -->
+                  <line x1="0" y1="180" x2="700" y2="180" stroke="#9aa3ab" stroke-width="1.5" stroke-dasharray="4 4"/>
+                  <text x="14" y="174" fill="#6A737C" font-size="10" font-style="italic">Yours · appears after first send</text>
+                  <text x="600" y="80" fill="#7fb8b9" font-size="10" font-weight="600">Industry · 3.8%</text>
+                </svg>
+              </div>
+              <div style="display:flex; justify-content: space-between; color: var(--mc-text-muted); font-size: 10px; margin-top: 4px;">
+                <span>Apr 04</span><span>Apr 12</span><span>Apr 20</span><span>Apr 28</span><span>May 03</span>
+              </div>
+              <div class="legend-line">
+                <span><span class="swatch subtle-teal"></span>Beauty SMB benchmark (industry)</span>
+                <span><span class="swatch dashed-gray"></span>Yours · pending first send</span>
+              </div>
+            </div>
+
+            <div class="chart-side-rail">
+              <div class="rail-row"><span class="rail-label">Total message count</span><span class="rail-value muted">— <span class="rail-bench">/ 12 ind.</span></span></div>
+              <div class="rail-row"><span class="rail-label">Total messages sent</span><span class="rail-value muted">— <span class="rail-bench">/ 8.9k ind.</span></span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conversions -->
+        <div class="card">
+          <div class="card-h">
+            <div class="card-h-left">
+              <h3 class="card-title">Conversions <span class="pill industry">Industry reference funnel</span></h3>
+              <p class="card-subtitle">What an average beauty/skincare brand your size sees in 30 days · 12,400 brands</p>
+            </div>
+            <div class="card-h-right">
+              <button class="ctx-cta">Connect Shopify</button>
+            </div>
+          </div>
+
+          <div class="conv-tabs-row">
+            <div class="conv-tab active">Conversion funnel</div>
+            <div class="conv-tab">Conversions over time</div>
+          </div>
+
+          <div class="chart-headline-metric">
+            <div>
+              <div class="chart-headline-label">Click rate</div>
+              <div class="chart-headline-value muted">—</div>
+            </div>
+            <div>
+              <div class="chart-headline-label">Industry</div>
+              <div class="chart-headline-bench">3.8%</div>
+            </div>
+          </div>
+
+          <div class="funnel">
+            <div class="funnel-step">
+              <span class="funnel-label">Deliveries</span>
+              <span class="funnel-num bench">8,940 <small>· 100%</small></span>
+              <div class="funnel-bar"><div class="funnel-bar-fill bench" style="width:100%"></div></div>
+              <span class="funnel-dropoff">Industry baseline</span>
+              <span class="funnel-arrow">→</span>
+            </div>
+            <div class="funnel-step">
+              <span class="funnel-label">Opened</span>
+              <span class="funnel-num bench">2,154 <small>· 24.1%</small></span>
+              <div class="funnel-bar"><div class="funnel-bar-fill bench" style="width:24%"></div></div>
+              <span class="funnel-dropoff">▼ 75.9% drop-off</span>
+              <span class="funnel-arrow">→</span>
+            </div>
+            <div class="funnel-step">
+              <span class="funnel-label">Clicked</span>
+              <span class="funnel-num bench">340 <small>· 3.8%</small></span>
+              <div class="funnel-bar"><div class="funnel-bar-fill bench" style="width:3.8%"></div></div>
+              <span class="funnel-dropoff">▼ 84% from opens</span>
+            </div>
+          </div>
+
+          <div class="mc-insight-callout">
+            <div class="mc-insight-callout-text"><strong>✦ Where you'll fit</strong> · Connect Shopify and send to your 15 subscribers — we'll show your real numbers next to this benchmark. Beauty brands typically beat the open rate within 3 sends.</div>
+            <button class="ctx-cta-ghost">Connect Shopify</button>
+          </div>
+        </div>
+
+        <!-- Delivery -->
+        <div class="card">
+          <div class="card-h">
+            <div class="card-h-left">
+              <h3 class="card-title">Delivery <span class="pill industry">Industry baseline</span></h3>
+              <p class="card-subtitle">99.4% delivery is healthy for beauty SMBs · Below 97% suggests list quality issues</p>
+            </div>
+            <div class="card-h-right">
+              <span class="right-meta">Metric: <span class="snowflake">✦</span> Abuse report rate ▾</span>
+              <div class="toggle-group"><span class="active">Day</span><span>Week</span><span>Month</span></div>
+              <button class="ctx-cta">Send first campaign</button>
+            </div>
+          </div>
+
+          <div class="chart-side">
+            <div>
+              <div class="chart-headline-metric">
+                <div>
+                  <div class="chart-headline-label">Abuse report rate</div>
+                  <div class="chart-headline-value muted">—</div>
+                </div>
+                <div>
+                  <div class="chart-headline-label">Industry</div>
+                  <div class="chart-headline-bench">0.01%</div>
+                  <span class="perf-tag excellent" style="margin-left: 6px;">Excellent zone</span>
+                </div>
+              </div>
+
+              <div class="chart-svg-wrap">
+                <svg viewBox="0 0 700 200" preserveAspectRatio="none">
+                  <line x1="0" y1="50" x2="700" y2="50" stroke="#f1f1ef" stroke-width="1"/>
+                  <line x1="0" y1="100" x2="700" y2="100" stroke="#f1f1ef" stroke-width="1"/>
+                  <line x1="0" y1="150" x2="700" y2="150" stroke="#f1f1ef" stroke-width="1"/>
+                  <line x1="0" y1="170" x2="700" y2="170" stroke="#7fb8b9" stroke-width="2"/>
+                  <line x1="0" y1="185" x2="700" y2="185" stroke="#9aa3ab" stroke-width="1.5" stroke-dasharray="4 4"/>
+                  <text x="14" y="180" fill="#6A737C" font-size="10" font-style="italic">Yours · appears after first send</text>
+                  <text x="600" y="164" fill="#7fb8b9" font-size="10" font-weight="600">Industry · 0.01%</text>
+                </svg>
+              </div>
+              <div style="display:flex; justify-content: space-between; color: var(--mc-text-muted); font-size: 10px; margin-top: 4px;">
+                <span>Apr 04</span><span>Apr 06</span><span>Apr 08</span><span>Apr 10</span><span>Apr 12</span><span>Apr 14</span><span>Apr 16</span><span>Apr 18</span>
+              </div>
+              <div class="legend-line">
+                <span><span class="swatch subtle-teal"></span>Industry baseline</span>
+                <span><span class="swatch dashed-gray"></span>Yours · pending first send</span>
+              </div>
+            </div>
+
+            <div class="chart-side-rail">
+              <div class="rail-rail-title">Delivery details</div>
+              <div class="rail-row"><span class="rail-label">Emails sent</span><span class="rail-value muted">— <span class="rail-bench">/ 8,940</span></span></div>
+              <div class="rail-row"><span class="rail-label">Deliveries</span><span class="rail-value muted">— <span class="rail-bench">/ 8,888</span></span></div>
+              <div class="rail-row"><span class="rail-label">Bounces</span><span class="rail-value muted">— <span class="rail-bench">/ 36</span></span></div>
+              <div class="rail-row"><span class="rail-label">Unsubscribed</span><span class="rail-value muted">— <span class="rail-bench">/ 27</span></span></div>
+              <div class="rail-row"><span class="rail-label">Abuse reports</span><span class="rail-value muted">— <span class="rail-bench">/ 1</span></span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- ============================================================
+           CONCEPT C — Sample numbers in muted gray
+           ============================================================ -->
+      <div class="concept-view" id="view-C">
+
+        <div class="ai-banner">
+          <div class="ai-banner-text">
+            <strong><span class="snowflake">✦</span> Aurora Beauty Co — sample dashboard from a beauty brand like yours <span class="pill beta">Beta</span></strong>
+            <em>Numbers are <strong style="color: var(--sample-text-strong);">grayed out</strong> because they aren't yours yet. Click "Make this real" on any card to populate it with your data.</em>
+          </div>
+          <button class="ctx-cta">Connect Shopify</button>
+        </div>
+
+        <div class="filter-row">
+          <div class="filter-field"><span class="filter-label">Audience</span><div class="filter-input teal-border">Aurora Beauty (sample) ▾</div></div>
+          <div class="filter-field"><span class="filter-label">Date range</span><div class="filter-input">Last 30 days 📅</div></div>
+          <div class="filter-field"><span class="filter-label">Comparison</span><div class="filter-input">Industry averages ▾</div></div>
+          <div class="filter-field"><span class="filter-label">Filter by message name</span><div class="filter-input">8 messages selected ▾</div></div>
+          <div class="bot-filter">Bot filtering on</div>
+        </div>
+
+        <div class="tabs-row">
+          <div class="tab active">Performance</div>
+          <div class="tab">Compare message performance</div>
+        </div>
+
+        <!-- Monitor performance — sample (gray) -->
+        <div class="card">
+          <span class="pill sample card-sample-tag">SAMPLE</span>
+          <div class="card-h">
+            <div class="card-h-left">
+              <h3 class="card-title">Monitor performance</h3>
+              <p class="card-subtitle">Apr 4, 2026 · May 3, 2026 · <em style="color: var(--sample-text-strong); font-style: normal; font-weight: 600;">Sample data shown in gray</em></p>
+            </div>
+            <div class="card-h-right">
+              <button class="ctx-cta">Make this real · Send first campaign</button>
+            </div>
+          </div>
+          <div class="metrics">
+            <div class="metric">
+              <span class="metric-label"><span class="snow">✦</span>Total sends</span>
+              <span class="metric-value sample">8,940</span>
+              <span class="metric-delta sample">12% vs prev period</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label"><span class="snow">✦</span>Open rate</span>
+              <span class="metric-value sample">26.4%</span>
+              <div class="bench-row"><span class="bench-label">Industry:</span><span class="bench-value">24.1%</span> <span class="perf-tag good">Good</span></div>
+            </div>
+            <div class="metric">
+              <span class="metric-label"><span class="snow">✦</span>Click rate</span>
+              <span class="metric-value sample">4.2%</span>
+              <div class="bench-row"><span class="bench-label">Industry:</span><span class="bench-value">3.8%</span> <span class="perf-tag good">Good</span></div>
+            </div>
+            <div class="metric">
+              <span class="metric-label"><span class="snow">✦</span>Unsubscribe rate</span>
+              <span class="metric-value sample">0.18%</span>
+              <span class="metric-delta sample">0.12 pts better</span>
+            </div>
+          </div>
+          <div class="chips">
+            <div class="chip">Summarize Aurora's recent campaign performance</div>
+            <div class="chip">What is Aurora's performance by geo and device?</div>
+            <div class="chip">How has Aurora's contact list changed?</div>
+          </div>
+        </div>
+
+        <!-- Performance over time — sample gray -->
+        <div class="card">
+          <span class="pill sample card-sample-tag">SAMPLE</span>
+          <div class="card-h">
+            <div class="card-h-left">
+              <h3 class="card-title">Performance over time</h3>
+              <p class="card-subtitle">Apr 4, 2026 · May 3, 2026 · Aurora Beauty Co · <em style="color: var(--sample-text-strong); font-style: normal; font-weight: 600;">Sample data</em></p>
+            </div>
+            <div class="card-h-right">
+              <span class="right-meta">Metric: <span class="snowflake">✦</span> Click rate ▾</span>
+              <div class="toggle-group"><span>Day</span><span class="active">Week</span><span>Month</span></div>
+              <button class="ctx-cta">Make this real · Send first campaign</button>
+            </div>
+          </div>
+
+          <div class="chart-side">
+            <div>
+              <div class="chart-headline-metric">
+                <div>
+                  <div class="chart-headline-label">Click rate</div>
+                  <div class="chart-headline-value sample">4.2%</div>
+                  <span class="chart-headline-delta sample">0.4 pts vs industry</span>
+                </div>
+              </div>
+
+              <div class="chart-svg-wrap">
+                <svg viewBox="0 0 700 200" preserveAspectRatio="none">
+                  <line x1="0" y1="50" x2="700" y2="50" stroke="#f1f1ef" stroke-width="1"/>
+                  <line x1="0" y1="100" x2="700" y2="100" stroke="#f1f1ef" stroke-width="1"/>
+                  <line x1="0" y1="150" x2="700" y2="150" stroke="#f1f1ef" stroke-width="1"/>
+                  <!-- Aurora sample line in GRAY -->
+                  <path d="M 0 140 L 100 105 L 200 118 L 300 80 L 400 95 L 500 60 L 600 70 L 700 45" stroke="#c8ccd1" stroke-width="2.5" fill="none"/>
+                  <!-- Previous period dotted red -->
+                  <path d="M 0 130 L 100 120 L 200 125 L 300 110 L 400 115 L 500 100 L 600 95 L 700 85" stroke="#D13438" stroke-width="1.5" stroke-dasharray="3 3" fill="none"/>
+                  <!-- Industry subtle teal -->
+                  <line x1="0" y1="115" x2="700" y2="105" stroke="#7fb8b9" stroke-width="1.5"/>
+                  <!-- Sample dots in gray -->
+                  <circle cx="100" cy="105" r="3" fill="#9aa3ab"/>
+                  <circle cx="300" cy="80" r="3" fill="#9aa3ab"/>
+                  <circle cx="500" cy="60" r="3" fill="#9aa3ab"/>
+                  <circle cx="700" cy="45" r="3.5" fill="#9aa3ab"/>
+                  <text x="600" y="38" fill="#7a8088" font-size="10" font-weight="600">Aurora · 4.2%</text>
+                  <text x="600" y="98" fill="#7fb8b9" font-size="10">Industry · 3.8%</text>
+                </svg>
+              </div>
+              <div style="display:flex; justify-content: space-between; color: var(--mc-text-muted); font-size: 10px; margin-top: 4px;">
+                <span>Apr 04</span><span>Apr 12</span><span>Apr 20</span><span>Apr 28</span><span>May 03</span>
+              </div>
+              <div class="legend-line">
+                <span><span class="swatch sample-gray"></span>Aurora Beauty (sample data)</span>
+                <span><span class="swatch subtle-teal"></span>Beauty SMB benchmark (industry)</span>
+                <span><span class="swatch dotted-red"></span>Previous period</span>
+              </div>
+            </div>
+
+            <div class="chart-side-rail">
+              <div class="rail-row"><span class="rail-label">Total message count</span><span class="rail-value sample">12</span></div>
+              <div class="rail-row"><span class="rail-label">Total messages sent</span><span class="rail-value sample">8,940</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Conversions — sample gray -->
+        <div class="card">
+          <span class="pill sample card-sample-tag">SAMPLE</span>
+          <div class="card-h">
+            <div class="card-h-left">
+              <h3 class="card-title">Conversions</h3>
+              <p class="card-subtitle">Aurora Beauty Co · Apr 4, 2026 · May 3, 2026 · <em style="color: var(--sample-text-strong); font-style: normal; font-weight: 600;">Sample data</em></p>
+            </div>
+            <div class="card-h-right">
+              <button class="ctx-cta">Make this real · Connect Shopify</button>
+            </div>
+          </div>
+
+          <div class="conv-tabs-row">
+            <div class="conv-tab active">Conversion funnel</div>
+            <div class="conv-tab">Conversions over time</div>
+          </div>
+
+          <div class="chart-headline-metric">
+            <div>
+              <div class="chart-headline-label">Click rate</div>
+              <div class="chart-headline-value sample">4.2%</div>
+              <span class="chart-headline-delta sample">0.4 pts vs industry</span>
+            </div>
+          </div>
+
+          <div class="funnel">
+            <div class="funnel-step">
+              <span class="funnel-label">Deliveries</span>
+              <span class="funnel-num sample">8,940 <small>· 100%</small></span>
+              <div class="funnel-bar"><div class="funnel-bar-fill sample" style="width:100%"></div></div>
+              <span class="funnel-arrow">→</span>
+            </div>
+            <div class="funnel-step">
+              <span class="funnel-label">Opened</span>
+              <span class="funnel-num sample">2,360 <small>· 26.4%</small></span>
+              <div class="funnel-bar"><div class="funnel-bar-fill sample" style="width:26.4%"></div></div>
+              <span class="funnel-dropoff">▼ 73.6% drop-off</span>
+              <span class="funnel-arrow">→</span>
+            </div>
+            <div class="funnel-step">
+              <span class="funnel-label">Clicked</span>
+              <span class="funnel-num sample">375 <small>· 4.2%</small></span>
+              <div class="funnel-bar"><div class="funnel-bar-fill sample" style="width:4.2%"></div></div>
+              <span class="funnel-dropoff">▼ 84% from opens</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Delivery — sample gray -->
+        <div class="card">
+          <span class="pill sample card-sample-tag">SAMPLE</span>
+          <div class="card-h">
+            <div class="card-h-left">
+              <h3 class="card-title">Delivery</h3>
+              <p class="card-subtitle">Aurora Beauty Co · Apr 4, 2026 · May 3, 2026 · <em style="color: var(--sample-text-strong); font-style: normal; font-weight: 600;">Sample data</em></p>
+            </div>
+            <div class="card-h-right">
+              <span class="right-meta">Metric: <span class="snowflake">✦</span> Abuse report rate ▾</span>
+              <div class="toggle-group"><span class="active">Day</span><span>Week</span><span>Month</span></div>
+              <button class="ctx-cta">Make this real · Send first campaign</button>
+            </div>
+          </div>
+
+          <div class="chart-side">
+            <div>
+              <div class="chart-headline-metric">
+                <div>
+                  <div class="chart-headline-label">Abuse report rate</div>
+                  <div class="chart-headline-value sample">0.01%</div>
+                  <span class="perf-tag excellent" style="margin-left:6px;">Excellent zone</span>
+                </div>
+              </div>
+
+              <div class="chart-svg-wrap">
+                <svg viewBox="0 0 700 200" preserveAspectRatio="none">
+                  <line x1="0" y1="50" x2="700" y2="50" stroke="#f1f1ef" stroke-width="1"/>
+                  <line x1="0" y1="100" x2="700" y2="100" stroke="#f1f1ef" stroke-width="1"/>
+                  <line x1="0" y1="150" x2="700" y2="150" stroke="#f1f1ef" stroke-width="1"/>
+                  <!-- Aurora sample (gray) -->
+                  <polyline points="0,170 50,170 100,168 150,170 200,172 250,170 300,168 350,170 400,170 450,168 500,172 550,170 600,170 650,168 700,170" fill="none" stroke="#c8ccd1" stroke-width="2"/>
+                  <!-- Previous period dotted red -->
+                  <polyline points="0,168 100,170 200,166 300,168 400,170 500,168 600,166 700,168" fill="none" stroke="#D13438" stroke-width="1.5" stroke-dasharray="3 3"/>
+                  <!-- Industry subtle teal baseline -->
+                  <line x1="0" y1="170" x2="700" y2="170" stroke="#7fb8b9" stroke-width="1.5" stroke-dasharray="6 3"/>
+                  <text x="600" y="160" fill="#7a8088" font-size="10" font-weight="600">Aurora · 0.01%</text>
+                </svg>
+              </div>
+              <div style="display:flex; justify-content: space-between; color: var(--mc-text-muted); font-size: 10px; margin-top: 4px;">
+                <span>Apr 04</span><span>Apr 06</span><span>Apr 08</span><span>Apr 10</span><span>Apr 12</span><span>Apr 14</span><span>Apr 16</span><span>Apr 18</span>
+              </div>
+              <div class="legend-line">
+                <span><span class="swatch sample-gray"></span>Aurora Beauty (sample data)</span>
+                <span><span class="swatch subtle-teal"></span>Industry baseline</span>
+                <span><span class="swatch dotted-red"></span>Previous period</span>
+              </div>
+            </div>
+
+            <div class="chart-side-rail">
+              <div class="rail-rail-title">Delivery details</div>
+              <div class="rail-row"><span class="rail-label">Emails sent</span><span class="rail-value sample">8,940</span></div>
+              <div class="rail-row"><span class="rail-label">Deliveries</span><span class="rail-value sample">8,888</span></div>
+              <div class="rail-row"><span class="rail-label">Bounces</span><span class="rail-value sample">36</span></div>
+              <div class="rail-row"><span class="rail-label">Unsubscribed</span><span class="rail-value sample">27</span></div>
+              <div class="rail-row"><span class="rail-label">Abuse reports</span><span class="rail-value sample">1</span></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Trophy shelf -->
+        <div class="card">
+          <div class="card-h">
+            <div class="card-h-left">
+              <h3 class="card-title">Your milestones</h3>
+              <p class="card-subtitle">Earn these by taking real actions · Sending streak unlocks Conversion Insights</p>
+            </div>
+          </div>
+          <div class="trophy-shelf">
+            <div class="trophy earned">Account created</div>
+            <div class="trophy earned">First 19 contacts imported</div>
+            <div class="trophy locked">Connect Shopify</div>
+            <div class="trophy locked">Send first campaign</div>
+            <div class="trophy locked">2-week sending streak</div>
+            <div class="trophy locked">Unlock Conversion Insights</div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<script>
+  const conceptMeta = {
+    B: {
+      strong: "Concept B — Benchmarks-led",
+      span: "Industry medians on every empty widget. Benchmarks render in subtle teal so they read as reference, not real data. One contextual CTA per card.",
+      bsci: '<b>Behavioral spine:</b> Reciprocity (Cialdini · Regan 1971) · Social proof (Goldstein/Cialdini 2008) · Curiosity gap (Loewenstein 1994).<br><b>Steals from:</b> Klaviyo Benchmarks · HubSpot inline industry medians.'
+    },
+    C: {
+      strong: "Concept C — Sample-data-led",
+      span: "Fully populated dashboard with realistic beauty-brand sample data, rendered in gray so it reads as not-real. Each card has a 'Make this real' CTA.",
+      bsci: '<b>Behavioral spine:</b> Curiosity gap · IKEA effect (Norton/Mochon/Ariely 2012) · Goal gradient (Hull · Duolingo) · Peak-end on first send (Kahneman 1993).<br><b>Steals from:</b> Stripe sandbox · Notion templates · Duolingo streaks · ActiveCampaign Smart Start.'
+    }
+  };
+
+  function setConcept(c) {
+    document.querySelectorAll('.concept-tab').forEach(el => el.classList.remove('active'));
+    document.querySelector(`.concept-tab[data-c="${c}"]`).classList.add('active');
+    document.querySelectorAll('.concept-view').forEach(el => el.classList.remove('active'));
+    document.getElementById(`view-${c}`).classList.add('active');
+    document.getElementById('legend-strong').textContent = conceptMeta[c].strong;
+    document.getElementById('legend-span').textContent = conceptMeta[c].span;
+    document.getElementById('legend-bsci').innerHTML = conceptMeta[c].bsci;
+    document.getElementById('sample-banner').style.display = c === 'C' ? 'flex' : 'none';
+    // Re-trigger shimmer on tab switch by reflowing
+    document.querySelectorAll('.concept-view.active .ctx-cta').forEach(el => {
+      const beforeStyle = el.style.cssText;
+      el.style.animation = 'none';
+      void el.offsetWidth;
+      el.style.animation = '';
+    });
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+</script>
+</body>
+</html>
