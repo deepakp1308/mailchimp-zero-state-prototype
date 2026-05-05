@@ -130,7 +130,7 @@
     border-left: 4px solid var(--mc-yellow);
     padding: 12px 32px;
     font-size: 13px;
-    display: none;
+    display: flex;
     justify-content: space-between;
     align-items: center;
     color: var(--mc-text);
@@ -868,29 +868,154 @@
     margin-top: 6px;
   }
   .streak-row strong { color: var(--mc-text); font-weight: 600; }
+
+  /* ============================================================
+     ROUND 4 — DAZZLING animated trajectory
+     ============================================================ */
+  /* "Your trajectory" — dotted line that draws itself + glows */
+  @keyframes trajDraw {
+    0%   { stroke-dashoffset: var(--traj-len, 1400); opacity: 0; }
+    8%   { opacity: 0.85; }
+    65%  { stroke-dashoffset: 0; opacity: 0.95; }
+    80%  { opacity: 0.95; }
+    95%  { opacity: 0.55; }
+    100% { stroke-dashoffset: var(--traj-len, 1400); opacity: 0; }
+  }
+  .traj-line {
+    fill: none;
+    stroke: var(--mc-teal);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 6 6;
+    filter: drop-shadow(0 0 4px rgba(0,124,137,0.45));
+  }
+  .traj-line.animate {
+    stroke-dasharray: var(--traj-len, 1400);
+    stroke-dashoffset: var(--traj-len, 1400);
+    animation: trajDraw 6s ease-in-out infinite;
+  }
+  /* Dotted overlay variant — keeps the dotted character */
+  .traj-line-dotted {
+    fill: none;
+    stroke: var(--mc-teal);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-dasharray: 2 6;
+    opacity: 0.85;
+    filter: drop-shadow(0 0 3px rgba(0,124,137,0.4));
+  }
+
+  /* Soft gradient fill under the trajectory */
+  @keyframes trajFillGrow {
+    0%, 5%   { opacity: 0; }
+    20%      { opacity: 0.55; }
+    65%, 80% { opacity: 0.7; }
+    100%     { opacity: 0; }
+  }
+  .traj-fill {
+    fill: url(#trajGradient);
+    opacity: 0;
+  }
+  .traj-fill.animate { animation: trajFillGrow 6s ease-in-out infinite; }
+
+  /* Traveling dot that follows the path */
+  @keyframes trajDotAppear {
+    0%, 60% { opacity: 0; r: 0; }
+    65%     { opacity: 1; r: 6; }
+    80%     { opacity: 1; r: 7; }
+    95%     { opacity: 0.4; }
+    100%    { opacity: 0; }
+  }
+  .traj-dot {
+    fill: var(--mc-teal);
+    stroke: #fff;
+    stroke-width: 2;
+    opacity: 0;
+    filter: drop-shadow(0 0 6px rgba(0,124,137,0.7));
+  }
+  .traj-dot.animate { animation: trajDotAppear 6s ease-in-out infinite; }
+
+  /* Pulsing ripple on the landing dot */
+  @keyframes trajRipple {
+    0%, 65% { r: 5; opacity: 0; }
+    72%     { r: 6; opacity: 0.9; }
+    90%     { r: 22; opacity: 0; }
+    100%    { r: 22; opacity: 0; }
+  }
+  .traj-ripple {
+    fill: none;
+    stroke: var(--mc-teal);
+    stroke-width: 2;
+    opacity: 0;
+  }
+  .traj-ripple.animate { animation: trajRipple 6s ease-in-out infinite; }
+
+  /* "WIN" callout that reveals at landing */
+  @keyframes trajCallout {
+    0%, 65% { opacity: 0; transform: translateY(6px); }
+    72%     { opacity: 1; transform: translateY(0); }
+    92%     { opacity: 1; }
+    100%    { opacity: 0; }
+  }
+  .traj-callout {
+    font-size: 11px;
+    font-weight: 700;
+    fill: var(--mc-teal);
+    opacity: 0;
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+  .traj-callout.animate { animation: trajCallout 6s ease-in-out infinite; }
+
+  /* Sparkline trajectory inside metric cells (small charts) */
+  .metric-spark {
+    width: 100%;
+    height: 38px;
+    margin-top: 6px;
+    overflow: visible;
+  }
+  .metric-spark .traj-line.animate { animation-duration: 5.5s; }
+  .metric-spark .traj-dot.animate { animation-duration: 5.5s; }
+  .metric-spark .traj-ripple.animate { animation-duration: 5.5s; }
+
+  /* Subtitle "you-could-be-here" badge for chart trajectories */
+  .traj-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    background: var(--mc-teal-soft-bg);
+    border: 1px solid #c8e3e3;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--mc-teal);
+    margin-left: 8px;
+  }
+  .traj-badge::before {
+    content: "✦";
+    font-size: 11px;
+  }
 </style>
 </head>
 <body>
 
 <!-- ===== Concept selector ===== -->
 <div class="concept-bar">
-  <div class="concept-bar-title">Mailchimp Marketing dashboard zero-state <small>· Pass 1 prototype</small></div>
-  <div class="concept-tabs">
-    <div class="concept-tab active" data-c="B" onclick="setConcept('B')">Concept B · Benchmarks-led</div>
-    <div class="concept-tab" data-c="C" onclick="setConcept('C')">Concept C · Industry data + nudge dot</div>
-  </div>
-  <div class="concept-meta">Persona: Beauty/skincare SMB · 19 contacts · no campaigns · no store</div>
+  <div class="concept-bar-title">Mailchimp Marketing dashboard zero-state <small>· Industry-data + animated trajectory</small></div>
+  <div class="concept-meta" style="margin-left: auto;">Persona: Beauty/skincare SMB · 19 contacts · no campaigns · no store</div>
 </div>
 
 <div class="concept-legend">
   <div class="concept-legend-tag"></div>
   <div class="concept-legend-text">
-    <strong id="legend-strong">Concept B — Benchmarks-led</strong>
-    <span id="legend-span">Industry medians on every empty widget. Benchmarks render in subtle teal so they read as reference, not real data. One contextual CTA per card.</span>
+    <strong>Industry benchmark dashboard with animated trajectory</strong>
+    <span>Every chart shows the industry median in light gray, your dotted "trajectory" line dramatically rising from below to above — with a pulsing dot landing in the win zone. Coaching copy and streak goals turn empty widgets into a beat-the-industry game.</span>
   </div>
-  <div class="concept-legend-bsci" id="legend-bsci">
-    <b>Behavioral spine:</b> Reciprocity (Cialdini · Regan 1971) · Social proof (Goldstein/Cialdini 2008) · Curiosity gap (Loewenstein 1994).<br>
-    <b>Steals from:</b> Klaviyo Benchmarks · HubSpot inline industry medians.
+  <div class="concept-legend-bsci">
+    <b>Behavioral spine:</b> Social proof + curiosity gap (Loewenstein 1994) · Goal gradient (Hull · Duolingo) · Implementation intentions (Gollwitzer 1999) · Peak-end on first send (Kahneman 1993).<br>
+    <b>Steals from:</b> Klaviyo Benchmarks · Strava goal-line · Duolingo streaks · Linear progress dots.
   </div>
 </div>
 
@@ -947,255 +1072,9 @@
       <h1 class="mc-page-title">Marketing dashboard</h1>
 
       <!-- ============================================================
-           CONCEPT B
+           Single concept: Industry benchmark + animated trajectory
            ============================================================ -->
-      <div class="concept-view active" id="view-B">
-
-        <div class="ai-banner">
-          <div class="ai-banner-text">
-            <strong><span class="snowflake">✦</span> Beauty brands like yours earn $0.42 per email sent — you're leaving this on the table <span class="pill beta">Beta</span></strong>
-            <em>Anonymized data from 12,400 beauty/skincare SMBs in your revenue band. Connect Shopify to see your numbers next to peers.</em>
-          </div>
-          <button class="ctx-cta">Connect Shopify</button>
-        </div>
-
-        <div class="filter-row">
-          <div class="filter-field"><span class="filter-label">Audience</span><div class="filter-input teal-border">Collaborators ▾</div></div>
-          <div class="filter-field"><span class="filter-label">Date range</span><div class="filter-input">Last 30 days 📅</div></div>
-          <div class="filter-field"><span class="filter-label">Comparison</span><div class="filter-input">Beauty SMBs · your size ▾</div></div>
-          <div class="filter-field"><span class="filter-label">Filter by message name</span><div class="filter-input">0 messages selected ▾</div></div>
-          <div class="bot-filter">Bot filtering on</div>
-        </div>
-
-        <div class="tabs-row">
-          <div class="tab active">Performance</div>
-          <div class="tab">Compare message performance</div>
-        </div>
-
-        <!-- Monitor performance -->
-        <div class="card">
-          <div class="card-h">
-            <div class="card-h-left">
-              <h3 class="card-title">Monitor performance <span class="pill industry">Industry reference</span></h3>
-              <p class="card-subtitle">Apr 4, 2026 · May 3, 2026 · Yours appears here after first send · Industry data: 12,400 beauty SMBs</p>
-            </div>
-            <div class="card-h-right">
-              <button class="ctx-cta">Send first campaign</button>
-            </div>
-          </div>
-          <div class="metrics">
-            <div class="metric">
-              <span class="metric-label"><span class="snow">✦</span>Total sends</span>
-              <span class="metric-value muted">—</span>
-              <div class="bench-row"><span class="bench-label">Industry median:</span><span class="bench-value">3.2 sends/wk</span></div>
-            </div>
-            <div class="metric">
-              <span class="metric-label"><span class="snow">✦</span>Open rate</span>
-              <span class="metric-value muted">—</span>
-              <div class="bench-row"><span class="bench-label">Industry:</span><span class="bench-value">24.1%</span> <span class="perf-tag good">Good</span></div>
-              <div class="bench-meter good"></div>
-            </div>
-            <div class="metric">
-              <span class="metric-label"><span class="snow">✦</span>Click rate</span>
-              <span class="metric-value muted">—</span>
-              <div class="bench-row"><span class="bench-label">Industry:</span><span class="bench-value">3.8%</span> <span class="perf-tag good">Good</span></div>
-              <div class="bench-meter good"></div>
-            </div>
-            <div class="metric">
-              <span class="metric-label"><span class="snow">✦</span>Unsubscribe rate</span>
-              <span class="metric-value muted">—</span>
-              <div class="bench-row"><span class="bench-label">Industry:</span><span class="bench-value">0.3%</span> <span class="perf-tag excellent">Excellent</span></div>
-              <div class="bench-meter excellent"></div>
-            </div>
-          </div>
-          <div class="mc-insight-callout">
-            <div class="mc-insight-callout-text"><strong>✦ Mailchimp insight</strong> · Beauty brands hit the 24% open rate by emailing 3× per week. Your first send to 15 subscribers will set your starting point.</div>
-          </div>
-          <div class="chips">
-            <div class="chip">What does "Good" mean for skincare specifically?</div>
-            <div class="chip">How do peers grow from 19 to 1,000 contacts?</div>
-            <div class="chip">Show benchmarks for my revenue size</div>
-          </div>
-        </div>
-
-        <!-- Performance over time -->
-        <div class="card">
-          <div class="card-h">
-            <div class="card-h-left">
-              <h3 class="card-title">Performance over time <span class="pill industry">Industry trendline</span></h3>
-              <p class="card-subtitle">Apr 4, 2026 · May 3, 2026 · Beauty SMBs · Median click rate</p>
-            </div>
-            <div class="card-h-right">
-              <span class="right-meta">Metric: <span class="snowflake">✦</span> Click rate ▾</span>
-              <div class="toggle-group"><span class="active">Day</span><span>Week</span><span>Month</span></div>
-              <button class="ctx-cta">Send first campaign</button>
-            </div>
-          </div>
-
-          <div class="chart-side">
-            <div>
-              <div class="chart-headline-metric">
-                <div>
-                  <div class="chart-headline-label">Click rate</div>
-                  <div class="chart-headline-value muted">—</div>
-                </div>
-                <div>
-                  <div class="chart-headline-label">Industry</div>
-                  <div class="chart-headline-bench">3.8%</div>
-                </div>
-              </div>
-
-              <div class="chart-svg-wrap">
-                <svg viewBox="0 0 700 200" preserveAspectRatio="none">
-                  <line x1="0" y1="50" x2="700" y2="50" stroke="#f1f1ef" stroke-width="1"/>
-                  <line x1="0" y1="100" x2="700" y2="100" stroke="#f1f1ef" stroke-width="1"/>
-                  <line x1="0" y1="150" x2="700" y2="150" stroke="#f1f1ef" stroke-width="1"/>
-                  <!-- Industry line in subtle teal -->
-                  <path d="M 0 110 Q 100 105, 200 100 T 400 92 T 600 88 L 700 86" stroke="#7fb8b9" stroke-width="2" fill="none"/>
-                  <!-- Yours placeholder dashed gray -->
-                  <line x1="0" y1="180" x2="700" y2="180" stroke="#9aa3ab" stroke-width="1.5" stroke-dasharray="4 4"/>
-                  <text x="14" y="174" fill="#6A737C" font-size="10" font-style="italic">Yours · appears after first send</text>
-                  <text x="600" y="80" fill="#7fb8b9" font-size="10" font-weight="600">Industry · 3.8%</text>
-                </svg>
-              </div>
-              <div style="display:flex; justify-content: space-between; color: var(--mc-text-muted); font-size: 10px; margin-top: 4px;">
-                <span>Apr 04</span><span>Apr 12</span><span>Apr 20</span><span>Apr 28</span><span>May 03</span>
-              </div>
-              <div class="legend-line">
-                <span><span class="swatch subtle-teal"></span>Beauty SMB benchmark (industry)</span>
-                <span><span class="swatch dashed-gray"></span>Yours · pending first send</span>
-              </div>
-            </div>
-
-            <div class="chart-side-rail">
-              <div class="rail-row"><span class="rail-label">Total message count</span><span class="rail-value muted">— <span class="rail-bench">/ 12 ind.</span></span></div>
-              <div class="rail-row"><span class="rail-label">Total messages sent</span><span class="rail-value muted">— <span class="rail-bench">/ 8.9k ind.</span></span></div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Conversions -->
-        <div class="card">
-          <div class="card-h">
-            <div class="card-h-left">
-              <h3 class="card-title">Conversions <span class="pill industry">Industry reference funnel</span></h3>
-              <p class="card-subtitle">What an average beauty/skincare brand your size sees in 30 days · 12,400 brands</p>
-            </div>
-            <div class="card-h-right">
-              <button class="ctx-cta">Connect Shopify</button>
-            </div>
-          </div>
-
-          <div class="conv-tabs-row">
-            <div class="conv-tab active">Conversion funnel</div>
-            <div class="conv-tab">Conversions over time</div>
-          </div>
-
-          <div class="chart-headline-metric">
-            <div>
-              <div class="chart-headline-label">Click rate</div>
-              <div class="chart-headline-value muted">—</div>
-            </div>
-            <div>
-              <div class="chart-headline-label">Industry</div>
-              <div class="chart-headline-bench">3.8%</div>
-            </div>
-          </div>
-
-          <div class="funnel">
-            <div class="funnel-step">
-              <span class="funnel-label">Deliveries</span>
-              <span class="funnel-num bench">8,940 <small>· 100%</small></span>
-              <div class="funnel-bar"><div class="funnel-bar-fill bench" style="width:100%"></div></div>
-              <span class="funnel-dropoff">Industry baseline</span>
-              <span class="funnel-arrow">→</span>
-            </div>
-            <div class="funnel-step">
-              <span class="funnel-label">Opened</span>
-              <span class="funnel-num bench">2,154 <small>· 24.1%</small></span>
-              <div class="funnel-bar"><div class="funnel-bar-fill bench" style="width:24%"></div></div>
-              <span class="funnel-dropoff">▼ 75.9% drop-off</span>
-              <span class="funnel-arrow">→</span>
-            </div>
-            <div class="funnel-step">
-              <span class="funnel-label">Clicked</span>
-              <span class="funnel-num bench">340 <small>· 3.8%</small></span>
-              <div class="funnel-bar"><div class="funnel-bar-fill bench" style="width:3.8%"></div></div>
-              <span class="funnel-dropoff">▼ 84% from opens</span>
-            </div>
-          </div>
-
-          <div class="mc-insight-callout">
-            <div class="mc-insight-callout-text"><strong>✦ Where you'll fit</strong> · Connect Shopify and send to your 15 subscribers — we'll show your real numbers next to this benchmark. Beauty brands typically beat the open rate within 3 sends.</div>
-            <button class="ctx-cta-ghost">Connect Shopify</button>
-          </div>
-        </div>
-
-        <!-- Delivery -->
-        <div class="card">
-          <div class="card-h">
-            <div class="card-h-left">
-              <h3 class="card-title">Delivery <span class="pill industry">Industry baseline</span></h3>
-              <p class="card-subtitle">99.4% delivery is healthy for beauty SMBs · Below 97% suggests list quality issues</p>
-            </div>
-            <div class="card-h-right">
-              <span class="right-meta">Metric: <span class="snowflake">✦</span> Abuse report rate ▾</span>
-              <div class="toggle-group"><span class="active">Day</span><span>Week</span><span>Month</span></div>
-              <button class="ctx-cta">Send first campaign</button>
-            </div>
-          </div>
-
-          <div class="chart-side">
-            <div>
-              <div class="chart-headline-metric">
-                <div>
-                  <div class="chart-headline-label">Abuse report rate</div>
-                  <div class="chart-headline-value muted">—</div>
-                </div>
-                <div>
-                  <div class="chart-headline-label">Industry</div>
-                  <div class="chart-headline-bench">0.01%</div>
-                  <span class="perf-tag excellent" style="margin-left: 6px;">Excellent zone</span>
-                </div>
-              </div>
-
-              <div class="chart-svg-wrap">
-                <svg viewBox="0 0 700 200" preserveAspectRatio="none">
-                  <line x1="0" y1="50" x2="700" y2="50" stroke="#f1f1ef" stroke-width="1"/>
-                  <line x1="0" y1="100" x2="700" y2="100" stroke="#f1f1ef" stroke-width="1"/>
-                  <line x1="0" y1="150" x2="700" y2="150" stroke="#f1f1ef" stroke-width="1"/>
-                  <line x1="0" y1="170" x2="700" y2="170" stroke="#7fb8b9" stroke-width="2"/>
-                  <line x1="0" y1="185" x2="700" y2="185" stroke="#9aa3ab" stroke-width="1.5" stroke-dasharray="4 4"/>
-                  <text x="14" y="180" fill="#6A737C" font-size="10" font-style="italic">Yours · appears after first send</text>
-                  <text x="600" y="164" fill="#7fb8b9" font-size="10" font-weight="600">Industry · 0.01%</text>
-                </svg>
-              </div>
-              <div style="display:flex; justify-content: space-between; color: var(--mc-text-muted); font-size: 10px; margin-top: 4px;">
-                <span>Apr 04</span><span>Apr 06</span><span>Apr 08</span><span>Apr 10</span><span>Apr 12</span><span>Apr 14</span><span>Apr 16</span><span>Apr 18</span>
-              </div>
-              <div class="legend-line">
-                <span><span class="swatch subtle-teal"></span>Industry baseline</span>
-                <span><span class="swatch dashed-gray"></span>Yours · pending first send</span>
-              </div>
-            </div>
-
-            <div class="chart-side-rail">
-              <div class="rail-rail-title">Delivery details</div>
-              <div class="rail-row"><span class="rail-label">Emails sent</span><span class="rail-value muted">— <span class="rail-bench">/ 8,940</span></span></div>
-              <div class="rail-row"><span class="rail-label">Deliveries</span><span class="rail-value muted">— <span class="rail-bench">/ 8,888</span></span></div>
-              <div class="rail-row"><span class="rail-label">Bounces</span><span class="rail-value muted">— <span class="rail-bench">/ 36</span></span></div>
-              <div class="rail-row"><span class="rail-label">Unsubscribed</span><span class="rail-value muted">— <span class="rail-bench">/ 27</span></span></div>
-              <div class="rail-row"><span class="rail-label">Abuse reports</span><span class="rail-value muted">— <span class="rail-bench">/ 1</span></span></div>
-            </div>
-          </div>
-        </div>
-
-      </div>
-
-      <!-- ============================================================
-           CONCEPT C — Industry benchmark dashboard + animated nudge
-           ============================================================ -->
-      <div class="concept-view" id="view-C">
+      <div class="concept-view active" id="view-C">
 
         <div class="ai-banner">
           <div class="ai-banner-text">
@@ -1235,21 +1114,50 @@
               <span class="metric-label"><span class="snow">✦</span>Total sends</span>
               <span class="metric-value industry">8,940</span>
               <span class="metric-delta industry">monthly median</span>
+              <svg class="metric-spark" viewBox="0 0 200 38" preserveAspectRatio="none">
+                <line x1="0" y1="28" x2="200" y2="22" stroke="#d6dadf" stroke-width="1.5"/>
+                <path class="traj-line animate traj-anim" style="--traj-len: 260;"
+                  d="M 0 35 Q 50 33, 100 24 T 200 6"/>
+                <circle class="traj-ripple animate traj-anim" cx="200" cy="6" r="3"/>
+                <circle class="traj-dot animate traj-anim" cx="200" cy="6" r="4"/>
+              </svg>
             </div>
             <div class="metric">
               <span class="metric-label"><span class="snow">✦</span>Open rate</span>
               <span class="metric-value industry">24.1%</span>
               <span class="perf-tag good">Industry median</span>
+              <svg class="metric-spark" viewBox="0 0 200 38" preserveAspectRatio="none">
+                <line x1="0" y1="26" x2="200" y2="22" stroke="#d6dadf" stroke-width="1.5"/>
+                <path class="traj-line animate traj-anim" style="--traj-len: 260;"
+                  d="M 0 34 Q 60 32, 110 22 T 200 4"/>
+                <circle class="traj-ripple animate traj-anim" cx="200" cy="4" r="3"/>
+                <circle class="traj-dot animate traj-anim" cx="200" cy="4" r="4"/>
+              </svg>
             </div>
             <div class="metric">
               <span class="metric-label"><span class="snow">✦</span>Click rate</span>
               <span class="metric-value industry">3.8%</span>
               <span class="perf-tag good">Industry median</span>
+              <svg class="metric-spark" viewBox="0 0 200 38" preserveAspectRatio="none">
+                <line x1="0" y1="28" x2="200" y2="24" stroke="#d6dadf" stroke-width="1.5"/>
+                <path class="traj-line animate traj-anim" style="--traj-len: 260;"
+                  d="M 0 35 Q 70 33, 120 22 T 200 6"/>
+                <circle class="traj-ripple animate traj-anim" cx="200" cy="6" r="3"/>
+                <circle class="traj-dot animate traj-anim" cx="200" cy="6" r="4"/>
+              </svg>
             </div>
             <div class="metric">
               <span class="metric-label"><span class="snow">✦</span>Unsubscribe rate</span>
               <span class="metric-value industry">0.30%</span>
               <span class="perf-tag excellent">Excellent zone</span>
+              <svg class="metric-spark" viewBox="0 0 200 38" preserveAspectRatio="none">
+                <line x1="0" y1="14" x2="200" y2="16" stroke="#d6dadf" stroke-width="1.5"/>
+                <!-- Lower is better — trajectory goes DOWN to win -->
+                <path class="traj-line animate traj-anim" style="--traj-len: 260;"
+                  d="M 0 8 Q 60 12, 110 22 T 200 32"/>
+                <circle class="traj-ripple animate traj-anim" cx="200" cy="32" r="3"/>
+                <circle class="traj-dot animate traj-anim" cx="200" cy="32" r="4"/>
+              </svg>
             </div>
           </div>
 
@@ -1298,11 +1206,19 @@
 
               <div class="chart-svg-wrap">
                 <svg viewBox="0 0 700 200" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="trajGradient" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#007C89" stop-opacity="0.45"/>
+                      <stop offset="60%" stop-color="#007C89" stop-opacity="0.12"/>
+                      <stop offset="100%" stop-color="#007C89" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+
                   <line x1="0" y1="50" x2="700" y2="50" stroke="#f1f1ef" stroke-width="1"/>
                   <line x1="0" y1="100" x2="700" y2="100" stroke="#f1f1ef" stroke-width="1"/>
                   <line x1="0" y1="150" x2="700" y2="150" stroke="#f1f1ef" stroke-width="1"/>
 
-                  <!-- Industry trendline (LIGHT GRAY now per user request) -->
+                  <!-- Industry trendline (light gray, mostly flat) -->
                   <path d="M 0 130 L 100 122 L 200 118 L 300 110 L 400 108 L 500 102 L 600 100 L 700 95" stroke="#d6dadf" stroke-width="2.5" fill="none"/>
                   <circle cx="100" cy="122" r="3" fill="#b3b8be"/>
                   <circle cx="300" cy="110" r="3" fill="#b3b8be"/>
@@ -1310,19 +1226,27 @@
                   <circle cx="700" cy="95" r="3.5" fill="#b3b8be"/>
                   <text x="610" y="88" fill="#9099a1" font-size="10" font-weight="600">Industry · 3.8%</text>
 
-                  <!-- Top-25% target line (dashed teal) -->
-                  <line x1="0" y1="60" x2="700" y2="60" stroke="#007C89" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.55"/>
-                  <text x="14" y="55" fill="#007C89" font-size="10" font-weight="600">Top 25% · 5.6% (where you could land)</text>
+                  <!-- Top-25% target line (dashed teal, faint) -->
+                  <line x1="0" y1="55" x2="700" y2="55" stroke="#007C89" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.4"/>
+                  <text x="14" y="48" fill="#007C89" font-size="10" font-weight="600">Top 25% · 5.6%</text>
 
-                  <!-- ANIMATED NUDGE DOT — bobbing, with ripple, on the target line -->
-                  <g class="nudge-group" transform="translate(560 60)">
-                    <circle class="nudge-ripple" cx="0" cy="0" r="5"/>
-                    <circle class="nudge-dot-core" cx="0" cy="0" r="6"/>
-                    <g class="nudge-arrow" transform="translate(0 -18)">
-                      <path d="M -4 4 L 0 -2 L 4 4" stroke="#007C89" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                    </g>
+                  <!-- ===== DAZZLING TRAJECTORY: dips low, swoops up to win zone ===== -->
+                  <!-- Soft fill underneath -->
+                  <path class="traj-fill animate"
+                    d="M 0 175 C 80 178, 160 172, 220 158 C 280 142, 320 130, 360 110 C 400 90, 440 70, 500 55 C 560 42, 620 38, 700 32 L 700 200 L 0 200 Z"/>
+                  <!-- Dotted trajectory line (drawn) -->
+                  <path class="traj-line animate traj-anim"
+                    style="--traj-len: 1300;"
+                    d="M 0 175 C 80 178, 160 172, 220 158 C 280 142, 320 130, 360 110 C 400 90, 440 70, 500 55 C 560 42, 620 38, 700 32"/>
+                  <!-- Pulsing ripple at landing point -->
+                  <circle class="traj-ripple animate traj-anim" cx="700" cy="32" r="5"/>
+                  <!-- Landing dot -->
+                  <circle class="traj-dot animate traj-anim" cx="700" cy="32" r="6"/>
+                  <!-- Win callout -->
+                  <g class="traj-callout animate traj-anim">
+                    <rect x="585" y="10" width="110" height="20" rx="10" fill="#007C89"/>
+                    <text x="640" y="24" fill="#fff" font-size="11" font-weight="700" text-anchor="middle">↑ You · 5.6%+ WIN</text>
                   </g>
-                  <text x="560" y="42" fill="#007C89" font-size="10" font-weight="700" text-anchor="middle" class="nudge-callout-text">You could be here</text>
                 </svg>
               </div>
               <div style="display:flex; justify-content: space-between; color: var(--mc-text-muted); font-size: 10px; margin-top: 4px;">
@@ -1331,13 +1255,13 @@
 
               <div class="coach-pill">
                 <span class="coach-icon">↑</span>
-                <span><strong>+1.8 pts above industry</strong> &nbsp;is what your peer top-quartile averages. <strong>Send a campaign to start your line.</strong></span>
+                <span><strong>Beat the industry by +1.8 pts</strong> &nbsp;— that's where peer top-quartile lands. <strong>Send your first campaign to start drawing your line.</strong></span>
               </div>
 
               <div class="legend-line">
                 <span><span class="swatch" style="background:#d6dadf"></span>Industry trendline</span>
-                <span><span class="swatch" style="background:#007C89; opacity:0.55; border-top: 1.5px dashed #007C89; height:0;"></span>Top 25% target</span>
-                <span>● Animated nudge dot · where you could land</span>
+                <span><span class="swatch" style="background:#007C89; opacity:0.45;"></span>Top 25% target</span>
+                <span><span class="swatch" style="background:#007C89; border-style: dotted;"></span>Your projected trajectory · animates</span>
               </div>
             </div>
 
@@ -1407,10 +1331,58 @@
             </div>
           </div>
 
+          <div style="display: flex; align-items: center; gap: 12px; margin-top: 24px; margin-bottom: 8px;">
+            <div style="font-size: 13px; font-weight: 600;">Revenue per email — your trajectory</div>
+            <span class="traj-badge">Animated · where you could land</span>
+          </div>
+          <div class="chart-svg-wrap" style="height: 180px;">
+            <svg viewBox="0 0 700 180" preserveAspectRatio="none">
+              <defs>
+                <linearGradient id="trajGradientConv" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#007C89" stop-opacity="0.42"/>
+                  <stop offset="60%" stop-color="#007C89" stop-opacity="0.1"/>
+                  <stop offset="100%" stop-color="#007C89" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <line x1="0" y1="40" x2="700" y2="40" stroke="#f1f1ef" stroke-width="1"/>
+              <line x1="0" y1="90" x2="700" y2="90" stroke="#f1f1ef" stroke-width="1"/>
+              <line x1="0" y1="140" x2="700" y2="140" stroke="#f1f1ef" stroke-width="1"/>
+
+              <!-- Industry baseline ($0.42/email) -->
+              <line x1="0" y1="115" x2="700" y2="113" stroke="#d6dadf" stroke-width="2.5"/>
+              <text x="610" y="106" fill="#9099a1" font-size="10" font-weight="600">Industry · $0.42</text>
+
+              <!-- Top 25% target ($0.71/email) -->
+              <line x1="0" y1="50" x2="700" y2="50" stroke="#007C89" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.4"/>
+              <text x="14" y="44" fill="#007C89" font-size="10" font-weight="600">Top 25% · $0.71/email</text>
+
+              <!-- Trajectory: pre-action low → swoops up to win -->
+              <path class="traj-fill animate" style="fill: url(#trajGradientConv)"
+                d="M 0 165 C 80 162, 160 152, 220 138 C 280 124, 320 108, 360 88 C 400 68, 440 56, 500 48 C 560 42, 620 36, 700 28 L 700 180 L 0 180 Z"/>
+              <path class="traj-line animate traj-anim"
+                style="--traj-len: 1280;"
+                d="M 0 165 C 80 162, 160 152, 220 138 C 280 124, 320 108, 360 88 C 400 68, 440 56, 500 48 C 560 42, 620 36, 700 28"/>
+              <circle class="traj-ripple animate traj-anim" cx="700" cy="28" r="5"/>
+              <circle class="traj-dot animate traj-anim" cx="700" cy="28" r="6"/>
+              <g class="traj-callout animate traj-anim">
+                <rect x="565" y="6" width="130" height="20" rx="10" fill="#007C89"/>
+                <text x="630" y="20" fill="#fff" font-size="11" font-weight="700" text-anchor="middle">↑ You · $0.71/email WIN</text>
+              </g>
+            </svg>
+          </div>
+          <div style="display:flex; justify-content: space-between; color: var(--mc-text-muted); font-size: 10px; margin-top: 4px;">
+            <span>Apr 04</span><span>Apr 12</span><span>Apr 20</span><span>Apr 28</span><span>May 03</span>
+          </div>
+          <div class="legend-line">
+            <span><span class="swatch" style="background:#d6dadf"></span>Industry · $0.42/email</span>
+            <span><span class="swatch" style="background:#007C89; opacity:0.45;"></span>Top 25% · $0.71</span>
+            <span><span class="swatch" style="background:#007C89; border-style: dotted;"></span>Your projected trajectory</span>
+          </div>
+
           <div class="coach-block">
             <div class="coach-icon-lg">✦</div>
             <div class="coach-block-text">
-              <strong>Beauty SMBs that connect Shopify earn <span class="coach-metric">$0.42 per email sent</span></strong> on average. Top-quartile: $0.71. Your funnel plots here once Shopify is connected — usually within 90 seconds.
+              <strong>Beauty SMBs that connect Shopify earn <span class="coach-metric">$0.42 per email sent</span></strong> on average. Top-quartile: <strong style="color: var(--mc-up);">$0.71</strong>. <strong>Connect Shopify in ~90 seconds and watch your trajectory plot in real-time.</strong>
             </div>
             <button class="ctx-cta-ghost">Connect Shopify</button>
           </div>
@@ -1443,26 +1415,41 @@
 
               <div class="chart-svg-wrap">
                 <svg viewBox="0 0 700 200" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="trajGradientDel" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#007C89" stop-opacity="0.4"/>
+                      <stop offset="60%" stop-color="#007C89" stop-opacity="0.1"/>
+                      <stop offset="100%" stop-color="#007C89" stop-opacity="0"/>
+                    </linearGradient>
+                  </defs>
+
                   <line x1="0" y1="50" x2="700" y2="50" stroke="#f1f1ef" stroke-width="1"/>
                   <line x1="0" y1="100" x2="700" y2="100" stroke="#f1f1ef" stroke-width="1"/>
                   <line x1="0" y1="150" x2="700" y2="150" stroke="#f1f1ef" stroke-width="1"/>
 
-                  <!-- Industry baseline (very light gray) -->
-                  <polyline points="0,170 50,170 100,168 150,170 200,172 250,170 300,168 350,170 400,170 450,168 500,172 550,170 600,170 650,168 700,170" fill="none" stroke="#d6dadf" stroke-width="2.5"/>
-                  <text x="600" y="160" fill="#9099a1" font-size="10" font-weight="600">Industry · 0.01%</text>
+                  <!-- Industry baseline (light gray) -->
+                  <polyline points="0,150 50,150 100,148 150,150 200,152 250,150 300,148 350,150 400,150 450,148 500,152 550,150 600,150 650,148 700,150" fill="none" stroke="#d6dadf" stroke-width="2.5"/>
+                  <text x="600" y="142" fill="#9099a1" font-size="10" font-weight="600">Industry · 0.01%</text>
 
-                  <!-- Excellent target zone — your goal -->
-                  <line x1="0" y1="170" x2="700" y2="170" stroke="#007C89" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.55"/>
+                  <!-- Excellent target line (dashed teal) — top of green zone -->
+                  <line x1="0" y1="60" x2="700" y2="60" stroke="#007C89" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.4"/>
+                  <text x="14" y="53" fill="#007C89" font-size="10" font-weight="600">Top 25% delivery rate · 99.7%</text>
 
-                  <!-- Animated nudge dot at the excellent line, late position -->
-                  <g class="nudge-group" transform="translate(580 170)">
-                    <circle class="nudge-ripple" cx="0" cy="0" r="5"/>
-                    <circle class="nudge-dot-core" cx="0" cy="0" r="6"/>
-                    <g class="nudge-arrow" transform="translate(0 -18)">
-                      <path d="M -4 4 L 0 -2 L 4 4" stroke="#007C89" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
-                    </g>
+                  <!-- Soft fill underneath trajectory -->
+                  <path class="traj-fill animate" style="fill: url(#trajGradientDel)"
+                    d="M 0 180 C 80 175, 150 168, 210 155 C 270 142, 330 128, 400 105 C 470 82, 540 65, 700 50 L 700 200 L 0 200 Z"/>
+                  <!-- DAZZLING TRAJECTORY -->
+                  <path class="traj-line animate traj-anim"
+                    style="--traj-len: 1250;"
+                    d="M 0 180 C 80 175, 150 168, 210 155 C 270 142, 330 128, 400 105 C 470 82, 540 65, 700 50"/>
+                  <!-- Pulsing landing -->
+                  <circle class="traj-ripple animate traj-anim" cx="700" cy="50" r="5"/>
+                  <circle class="traj-dot animate traj-anim" cx="700" cy="50" r="6"/>
+                  <!-- Win callout -->
+                  <g class="traj-callout animate traj-anim">
+                    <rect x="585" y="28" width="110" height="20" rx="10" fill="#007C89"/>
+                    <text x="640" y="42" fill="#fff" font-size="11" font-weight="700" text-anchor="middle">↑ You · Top 25%</text>
                   </g>
-                  <text x="580" y="152" fill="#007C89" font-size="10" font-weight="700" text-anchor="middle">Stay in the green zone</text>
                 </svg>
               </div>
               <div style="display:flex; justify-content: space-between; color: var(--mc-text-muted); font-size: 10px; margin-top: 4px;">
@@ -1470,13 +1457,14 @@
               </div>
 
               <div class="coach-pill">
-                <span class="coach-icon">✓</span>
-                <span><strong>Most beauty SMBs land here on day one</strong> &nbsp;by sending only to opted-in subscribers. Your 15 subscribers are clean — you'll start green.</span>
+                <span class="coach-icon">↑</span>
+                <span><strong>Beat the industry by hitting 99.7% delivery</strong> &nbsp;— top-quartile beauty SMBs land here. Your 15 opted-in subscribers are clean. <strong>Send to draw your line.</strong></span>
               </div>
 
               <div class="legend-line">
                 <span><span class="swatch" style="background:#d6dadf"></span>Industry baseline</span>
-                <span>● Animated nudge dot · target zone</span>
+                <span><span class="swatch" style="background:#007C89; opacity:0.45;"></span>Top 25% target</span>
+                <span><span class="swatch" style="background:#007C89; border-style: dotted;"></span>Your projected trajectory</span>
               </div>
             </div>
 
@@ -1508,18 +1496,39 @@
             <div>
               <div style="font-size: 12px; color: var(--mc-text-secondary); margin-bottom: 4px;">Goal: Open rate</div>
               <div style="display:flex; align-items: baseline; gap: 8px;"><strong style="font-size: 22px; font-weight: 700;">—</strong><span style="font-size: 12px; color: var(--industry-text-strong);">vs. industry 24.1%</span></div>
+              <svg class="metric-spark" viewBox="0 0 200 38" preserveAspectRatio="none">
+                <line x1="0" y1="26" x2="200" y2="22" stroke="#d6dadf" stroke-width="1.5"/>
+                <path class="traj-line animate traj-anim" style="--traj-len: 260;"
+                  d="M 0 35 Q 60 33, 110 22 T 200 4"/>
+                <circle class="traj-ripple animate traj-anim" cx="200" cy="4" r="3"/>
+                <circle class="traj-dot animate traj-anim" cx="200" cy="4" r="4"/>
+              </svg>
               <div class="streak-bar"><div class="streak-bar-fill animate" style="--streak-pct: 0%;"></div></div>
               <div class="streak-row"><span>Send to start</span><span>Goal: <strong>28%</strong></span></div>
             </div>
             <div>
               <div style="font-size: 12px; color: var(--mc-text-secondary); margin-bottom: 4px;">Goal: Click rate</div>
               <div style="display:flex; align-items: baseline; gap: 8px;"><strong style="font-size: 22px; font-weight: 700;">—</strong><span style="font-size: 12px; color: var(--industry-text-strong);">vs. industry 3.8%</span></div>
+              <svg class="metric-spark" viewBox="0 0 200 38" preserveAspectRatio="none">
+                <line x1="0" y1="28" x2="200" y2="24" stroke="#d6dadf" stroke-width="1.5"/>
+                <path class="traj-line animate traj-anim" style="--traj-len: 260;"
+                  d="M 0 35 Q 70 33, 120 22 T 200 6"/>
+                <circle class="traj-ripple animate traj-anim" cx="200" cy="6" r="3"/>
+                <circle class="traj-dot animate traj-anim" cx="200" cy="6" r="4"/>
+              </svg>
               <div class="streak-bar"><div class="streak-bar-fill animate" style="--streak-pct: 0%;"></div></div>
               <div class="streak-row"><span>Send to start</span><span>Goal: <strong>5.6%</strong></span></div>
             </div>
             <div>
               <div style="font-size: 12px; color: var(--mc-text-secondary); margin-bottom: 4px;">Goal: Revenue / email</div>
               <div style="display:flex; align-items: baseline; gap: 8px;"><strong style="font-size: 22px; font-weight: 700;">—</strong><span style="font-size: 12px; color: var(--industry-text-strong);">vs. industry $0.42</span></div>
+              <svg class="metric-spark" viewBox="0 0 200 38" preserveAspectRatio="none">
+                <line x1="0" y1="22" x2="200" y2="20" stroke="#d6dadf" stroke-width="1.5"/>
+                <path class="traj-line animate traj-anim" style="--traj-len: 260;"
+                  d="M 0 35 Q 60 32, 110 20 T 200 4"/>
+                <circle class="traj-ripple animate traj-anim" cx="200" cy="4" r="3"/>
+                <circle class="traj-dot animate traj-anim" cx="200" cy="4" r="4"/>
+              </svg>
               <div class="streak-bar"><div class="streak-bar-fill animate" style="--streak-pct: 0%;"></div></div>
               <div class="streak-row"><span>Connect Shopify</span><span>Goal: <strong>$0.71</strong></span></div>
             </div>
@@ -1543,37 +1552,20 @@
 </div>
 
 <script>
-  const conceptMeta = {
-    B: {
-      strong: "Concept B — Benchmarks-led",
-      span: "Industry medians on every empty widget. Benchmarks render in subtle teal so they read as reference, not real data. One contextual CTA per card.",
-      bsci: '<b>Behavioral spine:</b> Reciprocity (Cialdini · Regan 1971) · Social proof (Goldstein/Cialdini 2008) · Curiosity gap (Loewenstein 1994).<br><b>Steals from:</b> Klaviyo Benchmarks · HubSpot inline industry medians.'
-    },
-    C: {
-      strong: "Concept C — Industry benchmark dashboard + animated nudge",
-      span: "Fully populated dashboard with anonymized industry benchmark numbers in light gray. Pulsing teal nudge dot on each chart shows where you could land. Coaching copy + streak bars gamify beating the industry.",
-      bsci: '<b>Behavioral spine:</b> Social proof + curiosity gap (Loewenstein 1994) · Goal gradient (Hull · Duolingo bobbing dot) · Peak-end on first send (Kahneman 1993) · Implementation intentions (Gollwitzer 1999, "beat the industry by X%").<br><b>Steals from:</b> Klaviyo Benchmarks percentile rank · Duolingo streak meter · Linear/Strava goal-line animation.'
-    }
-  };
-
-  function setConcept(c) {
-    document.querySelectorAll('.concept-tab').forEach(el => el.classList.remove('active'));
-    document.querySelector(`.concept-tab[data-c="${c}"]`).classList.add('active');
-    document.querySelectorAll('.concept-view').forEach(el => el.classList.remove('active'));
-    document.getElementById(`view-${c}`).classList.add('active');
-    document.getElementById('legend-strong').textContent = conceptMeta[c].strong;
-    document.getElementById('legend-span').textContent = conceptMeta[c].span;
-    document.getElementById('legend-bsci').innerHTML = conceptMeta[c].bsci;
-    document.getElementById('sample-banner').style.display = c === 'C' ? 'flex' : 'none';
-    // Re-trigger shimmer on tab switch by reflowing
-    document.querySelectorAll('.concept-view.active .ctx-cta').forEach(el => {
-      const beforeStyle = el.style.cssText;
+  // Single-concept prototype now — no concept switcher.
+  // Trigger trajectory animation replays on demand for demo purposes.
+  function replayTrajectories() {
+    document.querySelectorAll('.traj-anim').forEach(el => {
       el.style.animation = 'none';
       void el.offsetWidth;
       el.style.animation = '';
     });
-    window.scrollTo({top:0, behavior:'smooth'});
   }
+  // Show industry-mode banner by default (was conditional on tab)
+  document.addEventListener('DOMContentLoaded', () => {
+    const sb = document.getElementById('sample-banner');
+    if (sb) sb.style.display = 'flex';
+  });
 </script>
 </body>
 </html>
