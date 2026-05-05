@@ -95,7 +95,338 @@
   }
   .concept-tab:hover { background: var(--mc-teal-soft-bg); border-color: var(--mc-teal); }
   .concept-tab.active { background: var(--mc-teal); color: #fff; border-color: var(--mc-teal); }
-  .concept-meta { font-size: 12px; color: var(--mc-text-secondary); }
+  .concept-meta { font-size: 12px; color: var(--mc-text-secondary); margin-left: auto; }
+
+  /* ===== Variant switcher ===== */
+  .variant-switch {
+    display: inline-flex;
+    background: #f6f6f4;
+    border: 1px solid var(--mc-border);
+    border-radius: 8px;
+    padding: 3px;
+    gap: 2px;
+    margin-left: 16px;
+  }
+  .variant-tab {
+    background: transparent;
+    border: 0;
+    color: var(--mc-text-secondary);
+    padding: 7px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.15s;
+  }
+  .variant-tab:hover { color: var(--mc-text); }
+  .variant-tab.active {
+    background: #fff;
+    color: var(--mc-text);
+    font-weight: 600;
+    box-shadow: 0 1px 3px rgba(36,28,21,0.08);
+  }
+
+  /* ===== Maya floating panel ===== */
+  body[data-variant="A"] #maya-root { display: none !important; }
+
+  #maya-root {
+    position: fixed;
+    bottom: 24px;
+    right: 24px;
+    z-index: 200;
+    font-family: inherit;
+    color: var(--mc-text);
+  }
+
+  /* COLLAPSED CHIP */
+  .maya-chip {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 320px;
+    padding: 12px 16px 12px 12px;
+    background: #fff;
+    border: 1px solid var(--mc-border);
+    border-radius: 999px;
+    box-shadow: 0 6px 18px rgba(36,28,21,0.10), 0 1px 3px rgba(36,28,21,0.06);
+    cursor: pointer;
+    position: relative;
+    overflow: visible;
+    animation: mayaIdlePulse 6s ease-in-out infinite;
+    transition: transform 0.15s, box-shadow 0.15s;
+  }
+  .maya-chip::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 14px; right: 14px;
+    height: 3px;
+    background: var(--mc-yellow);
+    border-radius: 0 0 3px 3px;
+  }
+  .maya-chip:hover { transform: translateY(-2px); box-shadow: 0 10px 24px rgba(36,28,21,0.14); }
+  .maya-chip-text {
+    flex: 1;
+    font-size: 12px;
+    line-height: 1.35;
+    color: var(--mc-text);
+  }
+  .maya-chip-text strong { color: var(--mc-teal); font-weight: 700; }
+  .maya-chip-text .preview { color: var(--mc-text-secondary); display: block; margin-top: 2px; font-size: 11px; }
+  .maya-chip-chev { color: var(--mc-text-secondary); font-size: 14px; }
+  .maya-chip-badge {
+    position: absolute;
+    top: -4px; right: -4px;
+    background: var(--mc-prev-period);
+    color: #fff;
+    font-size: 10px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 999px;
+    border: 2px solid #fff;
+    display: none;
+  }
+  .maya-chip-badge.show { display: block; animation: mayaBadgePop 0.4s ease-out; }
+  @keyframes mayaBadgePop {
+    0% { transform: scale(0); }
+    60% { transform: scale(1.2); }
+    100% { transform: scale(1); }
+  }
+  @keyframes mayaIdlePulse {
+    0%, 100% { box-shadow: 0 6px 18px rgba(36,28,21,0.10), 0 1px 3px rgba(36,28,21,0.06), 0 0 0 0 rgba(0,124,137,0); }
+    8%       { box-shadow: 0 6px 18px rgba(36,28,21,0.10), 0 1px 3px rgba(36,28,21,0.06), 0 0 0 8px rgba(0,124,137,0.16); }
+    20%      { box-shadow: 0 6px 18px rgba(36,28,21,0.10), 0 1px 3px rgba(36,28,21,0.06), 0 0 0 0 rgba(0,124,137,0); }
+  }
+
+  /* EXPANDED CARD */
+  .maya-card {
+    width: 360px;
+    background: #fff;
+    border: 1px solid var(--mc-border);
+    border-radius: 14px;
+    box-shadow: 0 16px 48px rgba(36,28,21,0.18), 0 2px 8px rgba(36,28,21,0.08);
+    overflow: hidden;
+    display: none;
+    flex-direction: column;
+    animation: mayaCardOpen 0.32s cubic-bezier(0.2, 0.9, 0.3, 1);
+    position: relative;
+  }
+  .maya-card.open { display: flex; }
+  @keyframes mayaCardOpen {
+    from { opacity: 0; transform: translateY(12px) scale(0.96); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+  .maya-card-header {
+    background: linear-gradient(180deg, #FFFCED 0%, #ffffff 100%);
+    border-bottom: 1px solid var(--mc-border);
+    padding: 16px 16px 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    position: relative;
+  }
+  .maya-card-header::before {
+    content: "";
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: var(--mc-yellow);
+  }
+  .maya-portrait-wrap {
+    width: 72px;
+    height: 72px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .maya-halo {
+    position: absolute;
+    inset: -4px;
+    background: radial-gradient(circle at 50% 60%, rgba(255,224,27,0.55) 0%, rgba(255,224,27,0) 70%);
+    border-radius: 50%;
+    z-index: 0;
+  }
+  .maya-portrait-svg {
+    position: relative;
+    z-index: 1;
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    overflow: hidden;
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(36,28,21,0.10);
+    background: #FFE9C7;
+    display: block;
+  }
+  .freddie-cameo {
+    position: absolute;
+    bottom: -6px; right: -8px;
+    width: 28px; height: 28px;
+    background: var(--mc-yellow);
+    border-radius: 50%;
+    border: 2px solid #fff;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+  .freddie-cameo::before {
+    content: "";
+    width: 18px; height: 18px;
+    background: radial-gradient(circle at 30% 30%, #f7d600, #c98800);
+    border-radius: 50%;
+    position: relative;
+  }
+  .freddie-cameo::after {
+    content: "";
+    position: absolute;
+    width: 10px; height: 8px;
+    background: #241C15;
+    border-radius: 50% 50% 50% 50% / 70% 70% 30% 30%;
+    top: 8px; left: 9px;
+    box-shadow: 4px 0 0 -1px #241C15;
+  }
+  .maya-id { flex: 1; min-width: 0; }
+  .maya-name { font-size: 14px; font-weight: 700; color: var(--mc-text); }
+  .maya-role { font-size: 11px; color: var(--mc-text-secondary); display: flex; align-items: center; gap: 4px; margin-top: 2px; }
+  .maya-online { width: 6px; height: 6px; background: var(--mc-up); border-radius: 50%; display: inline-block; }
+  .maya-typing-dots { display: inline-flex; gap: 2px; margin-left: 6px; }
+  .maya-typing-dots span {
+    width: 4px; height: 4px; border-radius: 50%; background: var(--mc-text-muted);
+    animation: mayaTyping 1.2s infinite;
+  }
+  .maya-typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .maya-typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+  @keyframes mayaTyping {
+    0%, 60%, 100% { opacity: 0.3; transform: translateY(0); }
+    30% { opacity: 1; transform: translateY(-2px); }
+  }
+  .maya-controls {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .maya-icon-btn {
+    width: 28px; height: 28px;
+    border: 0;
+    background: transparent;
+    color: var(--mc-text-secondary);
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    line-height: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .maya-icon-btn:hover { background: #f1f1ef; color: var(--mc-text); }
+
+  .maya-card-body {
+    padding: 14px 16px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .maya-discussing {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--mc-teal-soft-bg);
+    color: var(--mc-teal);
+    border: 1px solid #c8e3e3;
+    border-radius: 999px;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    width: fit-content;
+  }
+  .maya-discussing::before { content: "✦"; }
+  .maya-speech {
+    font-size: 13px;
+    line-height: 1.55;
+    color: var(--mc-text);
+    transition: opacity 0.3s;
+  }
+  .maya-speech strong { font-weight: 700; }
+  .maya-speech.swap { opacity: 0; }
+  .maya-cta {
+    background: var(--mc-teal);
+    color: #fff;
+    border: 0;
+    padding: 11px 14px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    animation: ctaPulseHalo 6s ease-in-out infinite;
+    transition: background 0.18s;
+    font-family: inherit;
+  }
+  .maya-cta:hover { background: var(--mc-teal-hover); }
+  .maya-cta::after {
+    content: "→";
+    transition: transform 0.18s;
+  }
+  .maya-cta:hover::after { transform: translateX(4px); }
+  .maya-secondary {
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+  }
+  .maya-secondary a {
+    color: var(--mc-teal);
+    text-decoration: none;
+    font-weight: 500;
+    cursor: pointer;
+  }
+  .maya-secondary a:hover { text-decoration: underline; }
+  .maya-secondary a.muted { color: var(--mc-text-secondary); }
+  .maya-footnote {
+    font-size: 10px;
+    color: var(--mc-text-muted);
+    text-align: center;
+    padding-top: 6px;
+    border-top: 1px solid var(--mc-border);
+  }
+
+  /* Active widget glow when Maya is discussing it */
+  .card.maya-active {
+    box-shadow: 0 0 0 2px rgba(0,124,137,0.4), 0 4px 12px rgba(0,124,137,0.10);
+    transition: box-shadow 0.3s;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .maya-chip { animation: none; }
+    .maya-cta { animation: none; }
+    .maya-card { animation: none; }
+    .maya-typing-dots span { animation: none; opacity: 0.5; }
+    .maya-blink { animation: none !important; }
+    .maya-breath { animation: none !important; }
+  }
+
+  /* Avatar internal animations */
+  @keyframes mayaBlink {
+    0%, 92%, 100% { transform: scaleY(1); }
+    94%, 96%      { transform: scaleY(0.05); }
+  }
+  .maya-blink {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: mayaBlink 5s infinite;
+  }
+  @keyframes mayaBreath {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-1px); }
+  }
+  .maya-breath {
+    transform-origin: center;
+    transform-box: fill-box;
+    animation: mayaBreath 3s ease-in-out infinite;
+  }
 
   .concept-legend {
     background: #fff;
@@ -1001,10 +1332,14 @@
 </head>
 <body>
 
-<!-- ===== Concept selector ===== -->
+<!-- ===== Variant selector ===== -->
 <div class="concept-bar">
   <div class="concept-bar-title">Mailchimp Marketing dashboard zero-state <small>· Industry-data + animated trajectory</small></div>
-  <div class="concept-meta" style="margin-left: auto;">Persona: Beauty/skincare SMB · 19 contacts · no campaigns · no store</div>
+  <div class="variant-switch" role="tablist" aria-label="Variant switcher">
+    <button class="variant-tab active" data-variant="A" onclick="setVariant('A')" role="tab" aria-selected="true">Variant A · No avatar</button>
+    <button class="variant-tab" data-variant="B" onclick="setVariant('B')" role="tab" aria-selected="false">Variant B · With Maya ✦</button>
+  </div>
+  <div class="concept-meta">Persona: Beauty/skincare SMB · 19 contacts · no campaigns · no store</div>
 </div>
 
 <div class="concept-legend">
@@ -1098,7 +1433,7 @@
         </div>
 
         <!-- ============ Monitor performance ============ -->
-        <div class="card">
+        <div class="card" data-widget="monitor">
           <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
           <div class="card-h">
             <div class="card-h-left">
@@ -1177,7 +1512,7 @@
         </div>
 
         <!-- ============ Performance over time + animated nudge dot ============ -->
-        <div class="card">
+        <div class="card" data-widget="performance">
           <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
           <div class="card-h">
             <div class="card-h-left">
@@ -1280,7 +1615,7 @@
         </div>
 
         <!-- ============ Conversions ============ -->
-        <div class="card">
+        <div class="card" data-widget="conversions">
           <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
           <div class="card-h">
             <div class="card-h-left">
@@ -1389,7 +1724,7 @@
         </div>
 
         <!-- ============ Delivery — animated nudge dot ============ -->
-        <div class="card">
+        <div class="card" data-widget="delivery">
           <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
           <div class="card-h">
             <div class="card-h-left">
@@ -1551,9 +1886,124 @@
   </div>
 </div>
 
+<!-- ============================================================
+     MAYA — Variant B AI avatar floating panel
+     ============================================================ -->
+<div id="maya-root" aria-live="polite">
+
+  <!-- Collapsed chip -->
+  <div class="maya-chip" id="maya-chip" role="button" tabindex="0" aria-expanded="false" onclick="toggleMaya(true)">
+    <div class="maya-portrait-wrap" style="width:48px; height:48px;">
+      <div class="maya-halo"></div>
+      <svg class="maya-portrait-svg" viewBox="0 0 80 80" style="width:48px; height:48px;" aria-hidden="true">
+        <use href="#maya-portrait-defs"/>
+      </svg>
+    </div>
+    <div class="maya-chip-text">
+      <strong>✦ Maya</strong> · <span id="maya-chip-teaser">I noticed something about your dashboard</span>
+      <span class="preview" id="maya-chip-preview">Tap to hear the rationale →</span>
+    </div>
+    <span class="maya-chip-chev">▴</span>
+    <span class="maya-chip-badge" id="maya-chip-badge">new</span>
+  </div>
+
+  <!-- Expanded card -->
+  <div class="maya-card" id="maya-card" role="dialog" aria-label="Maya · Mailchimp data coach">
+    <div class="maya-card-header">
+      <div class="maya-portrait-wrap">
+        <div class="maya-halo"></div>
+        <svg class="maya-portrait-svg" viewBox="0 0 80 80" aria-label="Maya">
+          <!-- Inline portrait — we use the symbol directly here -->
+          <defs>
+            <radialGradient id="bgRad" cx="50%" cy="55%" r="60%">
+              <stop offset="0%" stop-color="#FFE9C7"/>
+              <stop offset="100%" stop-color="#F6CEA0"/>
+            </radialGradient>
+            <linearGradient id="hairGrad" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#5A3825"/>
+              <stop offset="100%" stop-color="#3F2818"/>
+            </linearGradient>
+          </defs>
+          <rect width="80" height="80" fill="url(#bgRad)"/>
+          <!-- Shoulders / cardigan (Mailchimp-teal accent) -->
+          <path class="maya-breath" d="M 6 80 C 10 60, 24 56, 40 56 C 56 56, 70 60, 74 80 Z" fill="#7FB8B9"/>
+          <!-- White tee -->
+          <path d="M 26 80 C 28 70, 36 66, 40 66 C 44 66, 52 70, 54 80 Z" fill="#fff"/>
+          <!-- Neck -->
+          <rect x="35" y="50" width="10" height="10" rx="3" fill="#E8B795"/>
+          <!-- Hair back -->
+          <path d="M 22 36 C 22 22, 32 14, 40 14 C 48 14, 58 22, 58 36 L 58 50 L 56 52 L 54 44 C 54 38, 48 36, 40 36 C 32 36, 26 38, 26 44 L 24 52 L 22 50 Z" fill="url(#hairGrad)"/>
+          <!-- Face -->
+          <ellipse cx="40" cy="38" rx="14" ry="16" fill="#F2C9A6"/>
+          <!-- Hair front sweep -->
+          <path d="M 26 32 C 28 24, 36 20, 40 20 C 44 20, 50 22, 52 28 C 50 30, 46 28, 42 28 C 36 28, 30 30, 26 34 Z" fill="url(#hairGrad)"/>
+          <!-- Brows -->
+          <path d="M 32 33 Q 35 31, 38 33" stroke="#3F2818" stroke-width="1" fill="none" stroke-linecap="round"/>
+          <path d="M 42 33 Q 45 31, 48 33" stroke="#3F2818" stroke-width="1" fill="none" stroke-linecap="round"/>
+          <!-- Eyes (blink animation via maya-blink) -->
+          <ellipse class="maya-blink" cx="35" cy="38" rx="1.4" ry="2" fill="#241C15"/>
+          <ellipse class="maya-blink" cx="45" cy="38" rx="1.4" ry="2" fill="#241C15"/>
+          <!-- Cheeks -->
+          <circle cx="32" cy="44" r="2" fill="#F4A57F" opacity="0.5"/>
+          <circle cx="48" cy="44" r="2" fill="#F4A57F" opacity="0.5"/>
+          <!-- Nose -->
+          <path d="M 40 41 L 39 45 L 41 45 Z" fill="#E0A382" opacity="0.6"/>
+          <!-- Smile -->
+          <path d="M 36 48 Q 40 51, 44 48" stroke="#9C5A3F" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+        </svg>
+        <div class="freddie-cameo" title="Freddie"></div>
+      </div>
+      <div class="maya-id">
+        <div class="maya-name">Maya</div>
+        <div class="maya-role"><span class="maya-online"></span> Mailchimp data coach
+          <span class="maya-typing-dots" id="maya-typing"><span></span><span></span><span></span></span>
+        </div>
+      </div>
+      <div class="maya-controls">
+        <button class="maya-icon-btn" onclick="toggleMaya(false); event.stopPropagation();" title="Minimize">▾</button>
+        <button class="maya-icon-btn" onclick="muteMaya(); event.stopPropagation();" title="Mute for session">⋯</button>
+      </div>
+    </div>
+
+    <div class="maya-card-body">
+      <div class="maya-discussing" id="maya-discussing">Now discussing: Monitor performance</div>
+      <div class="maya-speech" id="maya-speech">
+        You've imported <strong>15 subscribers</strong> — that's a clean list.
+        Beauty brands like yours hit a <strong>24.1% open rate</strong> by sending 3× a week.
+        Send your first campaign and we'll start filling in your numbers right beside the industry median.
+      </div>
+      <button class="maya-cta" id="maya-cta" onclick="event.stopPropagation();">
+        <span id="maya-cta-text">Send first campaign · 90 seconds</span>
+      </button>
+      <div class="maya-secondary">
+        <a onclick="event.stopPropagation();">Tell me more</a>
+        <a class="muted" onclick="muteMaya(); event.stopPropagation();">Not now</a>
+      </div>
+      <div class="maya-footnote">Based on 12,400 beauty SMBs in your revenue band</div>
+    </div>
+  </div>
+</div>
+
 <script>
-  // Single-concept prototype now — no concept switcher.
-  // Trigger trajectory animation replays on demand for demo purposes.
+  // ===== Variant switcher =====
+  function setVariant(v) {
+    document.body.setAttribute('data-variant', v);
+    document.querySelectorAll('.variant-tab').forEach(el => {
+      const isActive = el.dataset.variant === v;
+      el.classList.toggle('active', isActive);
+      el.setAttribute('aria-selected', isActive ? 'true' : 'false');
+    });
+    // When switching INTO B, auto-expand once and replay welcome
+    if (v === 'B') {
+      mayaState.muted = false;
+      mayaState.firedThisSession = new Set();
+      setTimeout(() => { if (!mayaState.muted) toggleMaya(true); }, 600);
+    } else {
+      toggleMaya(false);
+    }
+  }
+
+  // ===== Trajectory replay (existing) =====
   function replayTrajectories() {
     document.querySelectorAll('.traj-anim').forEach(el => {
       el.style.animation = 'none';
@@ -1561,10 +2011,136 @@
       el.style.animation = '';
     });
   }
-  // Show industry-mode banner by default (was conditional on tab)
+
+  // ===== Maya state machine =====
+  const mayaState = {
+    open: false,
+    muted: false,
+    activeWidget: null,
+    firedThisSession: new Set(),
+  };
+
+  const mayaSpeeches = {
+    monitor: {
+      discussing: "Now discussing: Monitor performance",
+      teaser: "Your 15 subscribers are warm — let's send",
+      preview: "Beauty brands hit 24.1% open rate. Tap →",
+      speech: `You've imported <strong>15 subscribers</strong> — that's a clean list.
+        Beauty brands like yours hit a <strong>24.1% open rate</strong> by sending 3× a week.
+        Send your first campaign and we'll start filling in your numbers right beside the industry median.`,
+      cta: "Send first campaign · 90 seconds"
+    },
+    performance: {
+      discussing: "Now discussing: Performance over time",
+      teaser: "See where you could land — top 25%",
+      preview: "Top 25% hit 5.6% click rate. Tap →",
+      speech: `See that dotted teal line swooping up? That's where the <strong>top 25% of beauty SMBs</strong> land — <strong>5.6% click rate</strong>.
+        Your trajectory plots in real-time once you send. Most peers cross the industry median by send #3.`,
+      cta: "Send first campaign · Aim for 5.6%"
+    },
+    conversions: {
+      discussing: "Now discussing: Conversions",
+      teaser: "Funnel is empty? Connect Shopify",
+      preview: "Connected stores earn $0.42/email. Tap →",
+      speech: `Beauty brands earning <strong>$0.42 per email</strong> all share one thing: a connected store.
+        Yours isn't connected yet — that's why this funnel is empty. Connecting Shopify takes ~90 seconds and your funnel populates instantly.`,
+      cta: "Connect Shopify · See your funnel"
+    },
+    delivery: {
+      discussing: "Now discussing: Delivery",
+      teaser: "You'll start in the green zone",
+      preview: "Top 25% hit 99.7% delivery. Tap →",
+      speech: `Delivery health starts on send #1. Your <strong>15 opted-in subscribers</strong> are clean,
+        so you'll likely land in the green zone (above <strong>99.7%</strong>) right away. Most peers worry about this — you don't have to.`,
+      cta: "Send first campaign · Stay clean"
+    }
+  };
+
+  function toggleMaya(forceOpen) {
+    const card = document.getElementById('maya-card');
+    const chip = document.getElementById('maya-chip');
+    const next = forceOpen !== undefined ? forceOpen : !mayaState.open;
+    mayaState.open = next;
+    card.classList.toggle('open', next);
+    chip.style.display = next ? 'none' : 'flex';
+    chip.setAttribute('aria-expanded', next ? 'true' : 'false');
+    if (next) {
+      // Clear unread badge
+      document.getElementById('maya-chip-badge').classList.remove('show');
+    }
+  }
+
+  function muteMaya() {
+    mayaState.muted = true;
+    toggleMaya(false);
+    document.getElementById('maya-root').style.display = 'none';
+    setTimeout(() => {
+      // Restore chip after 30s for demo purposes (would be 30 min in prod)
+      mayaState.muted = false;
+      document.getElementById('maya-root').style.display = '';
+    }, 30000);
+  }
+
+  function setMayaWidget(widget) {
+    if (widget === mayaState.activeWidget) return;
+    mayaState.activeWidget = widget;
+    const data = mayaSpeeches[widget];
+    if (!data) return;
+
+    // Update active widget glow
+    document.querySelectorAll('.card.maya-active').forEach(el => el.classList.remove('maya-active'));
+    const target = document.querySelector(`[data-widget="${widget}"]`);
+    if (target) target.classList.add('maya-active');
+
+    // Update card content (with fade)
+    const speechEl = document.getElementById('maya-speech');
+    speechEl.classList.add('swap');
+    setTimeout(() => {
+      document.getElementById('maya-discussing').textContent = data.discussing;
+      speechEl.innerHTML = data.speech;
+      document.getElementById('maya-cta-text').textContent = data.cta;
+      speechEl.classList.remove('swap');
+    }, 220);
+
+    // Update chip teaser
+    document.getElementById('maya-chip-teaser').textContent = data.teaser;
+    document.getElementById('maya-chip-preview').textContent = data.preview;
+
+    // If chip is collapsed and this widget hasn't fired yet, show new badge
+    if (!mayaState.open && !mayaState.firedThisSession.has(widget)) {
+      const badge = document.getElementById('maya-chip-badge');
+      badge.classList.remove('show');
+      void badge.offsetWidth;
+      badge.classList.add('show');
+    }
+    mayaState.firedThisSession.add(widget);
+  }
+
+  // ===== Scroll-sync IntersectionObserver =====
   document.addEventListener('DOMContentLoaded', () => {
     const sb = document.getElementById('sample-banner');
     if (sb) sb.style.display = 'flex';
+
+    // Default to Variant A
+    document.body.setAttribute('data-variant', 'A');
+
+    const widgets = document.querySelectorAll('[data-widget]');
+    if (!widgets.length || !('IntersectionObserver' in window)) return;
+
+    const visibility = new Map();
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => visibility.set(e.target, e.intersectionRatio));
+      // Pick the widget with highest intersection
+      let best = null, bestRatio = 0;
+      visibility.forEach((ratio, el) => {
+        if (ratio > bestRatio) { best = el; bestRatio = ratio; }
+      });
+      if (best && bestRatio > 0.35 && document.body.dataset.variant === 'B') {
+        setMayaWidget(best.dataset.widget);
+      }
+    }, { threshold: [0, 0.35, 0.5, 0.75, 1] });
+
+    widgets.forEach(w => io.observe(w));
   });
 </script>
 </body>
