@@ -33,12 +33,24 @@
     --mc-ghost: #E8EAED;
     --shadow-card: 0 1px 2px rgba(36,28,21,0.04);
 
-    /* Round-2 sample/benchmark visual treatment */
-    --sample-text: #9aa3ab;       /* Muted gray for sample numbers */
-    --sample-text-strong: #7a8088; /* Slightly darker for sample big numbers */
-    --sample-stroke: #c8ccd1;     /* Gray for sample chart strokes */
-    --bench-subtle-teal: #7fb8b9; /* Desaturated teal for benchmarks */
+    /* Sample/benchmark visual treatment */
+    --sample-text: #9aa3ab;
+    --sample-text-strong: #7a8088;
+    --sample-stroke: #c8ccd1;
+    --bench-subtle-teal: #7fb8b9;
     --bench-soft-bg: #eef6f6;
+
+    /* Round-3: Concept C is now Industry data — lighter, airier gray */
+    --industry-text: #b3b8be;       /* Even lighter for headline industry numbers */
+    --industry-text-strong: #9099a1; /* Slightly more legible for big numbers */
+    --industry-stroke: #d6dadf;     /* Very light gray chart strokes */
+    --industry-fill: #eef0f3;       /* Whisper-light fills */
+
+    /* Animated nudge dot tokens */
+    --nudge-dot: #007C89;           /* Mailchimp teal — your-position dot */
+    --nudge-dot-soft: rgba(0,124,137,0.25);
+    --nudge-up: #1AAB68;
+    --nudge-down: #D13438;
   }
 
   * { box-sizing: border-box; }
@@ -721,6 +733,141 @@
 
   /* Page-load shimmer trigger */
   .ctx-cta.no-shimmer::before { display: none; }
+
+  /* ============================================================
+     ROUND 3 — Industry data treatment + animated nudge dot
+     ============================================================ */
+  /* Industry-data variants for Concept C numbers */
+  .metric-value.industry { color: var(--industry-text-strong); font-weight: 600; }
+  .metric-delta.industry { color: var(--industry-text); }
+  .metric-delta.industry::before { content: "▲ "; color: var(--industry-text); }
+  .funnel-num.industry { color: var(--industry-text-strong); font-weight: 600; }
+  .funnel-bar-fill.industry { background: var(--industry-stroke); }
+  .rail-row .rail-value.industry { color: var(--industry-text-strong); font-weight: 600; }
+  .chart-headline-value.industry { color: var(--industry-text-strong); font-weight: 600; }
+
+  /* Animated chart nudge — pulsing dot showing "where you could land" */
+  @keyframes nudgeDotBob {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-6px); }
+  }
+  @keyframes nudgeDotRipple {
+    0%   { r: 5; opacity: 0.85; }
+    50%  { r: 14; opacity: 0; }
+    100% { r: 14; opacity: 0; }
+  }
+  @keyframes nudgeArrowFloat {
+    0%, 100% { transform: translateY(0); opacity: 0.85; }
+    50% { transform: translateY(-3px); opacity: 1; }
+  }
+
+  .nudge-group {
+    transform-origin: center;
+    animation: nudgeDotBob 2.4s ease-in-out infinite;
+  }
+  .nudge-ripple {
+    fill: none;
+    stroke: var(--nudge-dot);
+    stroke-width: 1.5;
+    animation: nudgeDotRipple 2.4s ease-out infinite;
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+  .nudge-dot-core {
+    fill: var(--nudge-dot);
+    stroke: #fff;
+    stroke-width: 2;
+  }
+  .nudge-arrow {
+    animation: nudgeArrowFloat 1.8s ease-in-out infinite;
+    transform-origin: center;
+    transform-box: fill-box;
+  }
+  .nudge-callout-text {
+    font-size: 11px;
+    fill: var(--nudge-dot);
+    font-weight: 600;
+  }
+
+  /* Coaching pill that sits near the chart */
+  .coach-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: #fff;
+    border: 1px solid var(--mc-teal);
+    border-radius: 999px;
+    padding: 6px 14px 6px 8px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--mc-teal);
+    margin-top: 10px;
+    position: relative;
+    box-shadow: 0 1px 2px rgba(0,124,137,0.08);
+  }
+  .coach-pill .coach-icon {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: var(--mc-teal);
+    color: #fff;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 12px;
+  }
+  .coach-pill strong { color: var(--mc-text); font-weight: 700; }
+
+  /* Coaching block under each card */
+  .coach-block {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 12px 14px;
+    background: var(--mc-teal-soft-bg);
+    border-radius: 8px;
+    margin-top: 14px;
+    flex-wrap: wrap;
+  }
+  .coach-block .coach-icon-lg {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    background: var(--mc-teal);
+    color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700;
+    flex-shrink: 0;
+  }
+  .coach-block-text { font-size: 12px; color: var(--mc-text); flex: 1; min-width: 220px; }
+  .coach-block-text strong { font-weight: 700; }
+  .coach-block-text .coach-metric { color: var(--mc-up); font-weight: 700; }
+
+  /* Gamification streak/level meter */
+  .streak-bar {
+    height: 6px;
+    background: var(--mc-ghost);
+    border-radius: 3px;
+    overflow: hidden;
+    margin-top: 8px;
+  }
+  .streak-bar-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--mc-teal) 0%, var(--mc-up) 100%);
+    border-radius: 3px;
+    width: 0%;
+    transition: width 0.6s ease-out;
+  }
+  @keyframes streakFill {
+    0% { width: 0%; }
+    100% { width: var(--streak-pct, 35%); }
+  }
+  .streak-bar-fill.animate { animation: streakFill 1.2s ease-out 0.4s both; }
+  .streak-row {
+    display: flex; justify-content: space-between;
+    font-size: 11px; color: var(--mc-text-secondary);
+    margin-top: 6px;
+  }
+  .streak-row strong { color: var(--mc-text); font-weight: 600; }
 </style>
 </head>
 <body>
@@ -730,7 +877,7 @@
   <div class="concept-bar-title">Mailchimp Marketing dashboard zero-state <small>· Pass 1 prototype</small></div>
   <div class="concept-tabs">
     <div class="concept-tab active" data-c="B" onclick="setConcept('B')">Concept B · Benchmarks-led</div>
-    <div class="concept-tab" data-c="C" onclick="setConcept('C')">Concept C · Sample-data-led</div>
+    <div class="concept-tab" data-c="C" onclick="setConcept('C')">Concept C · Industry data + nudge dot</div>
   </div>
   <div class="concept-meta">Persona: Beauty/skincare SMB · 19 contacts · no campaigns · no store</div>
 </div>
@@ -749,10 +896,10 @@
 
 <div class="sample-banner" id="sample-banner">
   <div>
-    <strong>Sample mode</strong> · Exploring with <em style="font-style:normal; color: var(--sample-text-strong); font-weight: 600;">grayed-out example data</em> from Aurora Beauty Co — a beauty brand like yours. Connect Shopify or send your first campaign to see your real numbers in full color.
+    <strong>Industry mode</strong> · Showing <em style="font-style:normal; color: var(--industry-text-strong); font-weight: 600;">anonymized industry benchmarks</em> from 12,400 beauty/skincare SMBs in your revenue band. Send your first campaign or connect Shopify to see your numbers — and how you stack up.
   </div>
   <div class="sample-banner-toggle">
-    <span class="active">Sample mode</span>
+    <span class="active">Industry mode</span>
     <span>My data</span>
   </div>
 </div>
@@ -1046,23 +1193,23 @@
       </div>
 
       <!-- ============================================================
-           CONCEPT C — Sample numbers in muted gray
+           CONCEPT C — Industry benchmark dashboard + animated nudge
            ============================================================ -->
       <div class="concept-view" id="view-C">
 
         <div class="ai-banner">
           <div class="ai-banner-text">
-            <strong><span class="snowflake">✦</span> Aurora Beauty Co — sample dashboard from a beauty brand like yours <span class="pill beta">Beta</span></strong>
-            <em>Numbers are <strong style="color: var(--sample-text-strong);">grayed out</strong> because they aren't yours yet. Click "Make this real" on any card to populate it with your data.</em>
+            <strong><span class="snowflake">✦</span> Industry benchmark dashboard — beauty/skincare SMBs your size <span class="pill beta">Beta</span></strong>
+            <em>Real anonymized data from 12,400 brands. The pulsing teal dot on each chart shows where you could land — and how to beat the industry average.</em>
           </div>
           <button class="ctx-cta">Connect Shopify</button>
         </div>
 
         <div class="filter-row">
-          <div class="filter-field"><span class="filter-label">Audience</span><div class="filter-input teal-border">Aurora Beauty (sample) ▾</div></div>
+          <div class="filter-field"><span class="filter-label">Audience</span><div class="filter-input teal-border">Beauty SMBs · your size ▾</div></div>
           <div class="filter-field"><span class="filter-label">Date range</span><div class="filter-input">Last 30 days 📅</div></div>
-          <div class="filter-field"><span class="filter-label">Comparison</span><div class="filter-input">Industry averages ▾</div></div>
-          <div class="filter-field"><span class="filter-label">Filter by message name</span><div class="filter-input">8 messages selected ▾</div></div>
+          <div class="filter-field"><span class="filter-label">Comparison</span><div class="filter-input">Industry median ▾</div></div>
+          <div class="filter-field"><span class="filter-label">Filter by message name</span><div class="filter-input">All messages ▾</div></div>
           <div class="bot-filter">Bot filtering on</div>
         </div>
 
@@ -1071,59 +1218,68 @@
           <div class="tab">Compare message performance</div>
         </div>
 
-        <!-- Monitor performance — sample (gray) -->
+        <!-- ============ Monitor performance ============ -->
         <div class="card">
-          <span class="pill sample card-sample-tag">SAMPLE</span>
+          <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
           <div class="card-h">
             <div class="card-h-left">
               <h3 class="card-title">Monitor performance</h3>
-              <p class="card-subtitle">Apr 4, 2026 · May 3, 2026 · <em style="color: var(--sample-text-strong); font-style: normal; font-weight: 600;">Sample data shown in gray</em></p>
+              <p class="card-subtitle">Apr 4, 2026 · May 3, 2026 · <em style="color: var(--industry-text-strong); font-style: normal; font-weight: 600;">Industry benchmark — 12,400 beauty SMBs</em></p>
             </div>
             <div class="card-h-right">
-              <button class="ctx-cta">Make this real · Send first campaign</button>
+              <button class="ctx-cta">Send first campaign · Beat the industry</button>
             </div>
           </div>
           <div class="metrics">
             <div class="metric">
               <span class="metric-label"><span class="snow">✦</span>Total sends</span>
-              <span class="metric-value sample">8,940</span>
-              <span class="metric-delta sample">12% vs prev period</span>
+              <span class="metric-value industry">8,940</span>
+              <span class="metric-delta industry">monthly median</span>
             </div>
             <div class="metric">
               <span class="metric-label"><span class="snow">✦</span>Open rate</span>
-              <span class="metric-value sample">26.4%</span>
-              <div class="bench-row"><span class="bench-label">Industry:</span><span class="bench-value">24.1%</span> <span class="perf-tag good">Good</span></div>
+              <span class="metric-value industry">24.1%</span>
+              <span class="perf-tag good">Industry median</span>
             </div>
             <div class="metric">
               <span class="metric-label"><span class="snow">✦</span>Click rate</span>
-              <span class="metric-value sample">4.2%</span>
-              <div class="bench-row"><span class="bench-label">Industry:</span><span class="bench-value">3.8%</span> <span class="perf-tag good">Good</span></div>
+              <span class="metric-value industry">3.8%</span>
+              <span class="perf-tag good">Industry median</span>
             </div>
             <div class="metric">
               <span class="metric-label"><span class="snow">✦</span>Unsubscribe rate</span>
-              <span class="metric-value sample">0.18%</span>
-              <span class="metric-delta sample">0.12 pts better</span>
+              <span class="metric-value industry">0.30%</span>
+              <span class="perf-tag excellent">Excellent zone</span>
             </div>
           </div>
+
+          <div class="coach-block">
+            <div class="coach-icon-lg">✦</div>
+            <div class="coach-block-text">
+              <strong>Top 25% of beauty SMBs hit <span class="coach-metric">28%+ open rate</span></strong> by sending 3× per week with personalized subject lines. Your first send to 15 subscribers can already top the median.
+            </div>
+            <button class="ctx-cta-ghost">Send first campaign</button>
+          </div>
+
           <div class="chips">
-            <div class="chip">Summarize Aurora's recent campaign performance</div>
-            <div class="chip">What is Aurora's performance by geo and device?</div>
-            <div class="chip">How has Aurora's contact list changed?</div>
+            <div class="chip">How do top performers beat 24% open rate?</div>
+            <div class="chip">Show benchmarks for skincare specifically</div>
+            <div class="chip">How peers grow from 19 to 1,000 contacts</div>
           </div>
         </div>
 
-        <!-- Performance over time — sample gray -->
+        <!-- ============ Performance over time + animated nudge dot ============ -->
         <div class="card">
-          <span class="pill sample card-sample-tag">SAMPLE</span>
+          <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
           <div class="card-h">
             <div class="card-h-left">
               <h3 class="card-title">Performance over time</h3>
-              <p class="card-subtitle">Apr 4, 2026 · May 3, 2026 · Aurora Beauty Co · <em style="color: var(--sample-text-strong); font-style: normal; font-weight: 600;">Sample data</em></p>
+              <p class="card-subtitle">Apr 4, 2026 · May 3, 2026 · <em style="color: var(--industry-text-strong); font-style: normal; font-weight: 600;">Industry trendline · beat the dotted teal target</em></p>
             </div>
             <div class="card-h-right">
               <span class="right-meta">Metric: <span class="snowflake">✦</span> Click rate ▾</span>
               <div class="toggle-group"><span>Day</span><span class="active">Week</span><span>Month</span></div>
-              <button class="ctx-cta">Make this real · Send first campaign</button>
+              <button class="ctx-cta">Send first campaign · Aim higher</button>
             </div>
           </div>
 
@@ -1131,9 +1287,12 @@
             <div>
               <div class="chart-headline-metric">
                 <div>
-                  <div class="chart-headline-label">Click rate</div>
-                  <div class="chart-headline-value sample">4.2%</div>
-                  <span class="chart-headline-delta sample">0.4 pts vs industry</span>
+                  <div class="chart-headline-label">Industry click rate</div>
+                  <div class="chart-headline-value industry">3.8%</div>
+                </div>
+                <div>
+                  <div class="chart-headline-label">Top 25% beat</div>
+                  <div class="chart-headline-bench" style="color: var(--mc-up);">5.6%</div>
                 </div>
               </div>
 
@@ -1142,48 +1301,70 @@
                   <line x1="0" y1="50" x2="700" y2="50" stroke="#f1f1ef" stroke-width="1"/>
                   <line x1="0" y1="100" x2="700" y2="100" stroke="#f1f1ef" stroke-width="1"/>
                   <line x1="0" y1="150" x2="700" y2="150" stroke="#f1f1ef" stroke-width="1"/>
-                  <!-- Aurora sample line in GRAY -->
-                  <path d="M 0 140 L 100 105 L 200 118 L 300 80 L 400 95 L 500 60 L 600 70 L 700 45" stroke="#c8ccd1" stroke-width="2.5" fill="none"/>
-                  <!-- Previous period dotted red -->
-                  <path d="M 0 130 L 100 120 L 200 125 L 300 110 L 400 115 L 500 100 L 600 95 L 700 85" stroke="#D13438" stroke-width="1.5" stroke-dasharray="3 3" fill="none"/>
-                  <!-- Industry subtle teal -->
-                  <line x1="0" y1="115" x2="700" y2="105" stroke="#7fb8b9" stroke-width="1.5"/>
-                  <!-- Sample dots in gray -->
-                  <circle cx="100" cy="105" r="3" fill="#9aa3ab"/>
-                  <circle cx="300" cy="80" r="3" fill="#9aa3ab"/>
-                  <circle cx="500" cy="60" r="3" fill="#9aa3ab"/>
-                  <circle cx="700" cy="45" r="3.5" fill="#9aa3ab"/>
-                  <text x="600" y="38" fill="#7a8088" font-size="10" font-weight="600">Aurora · 4.2%</text>
-                  <text x="600" y="98" fill="#7fb8b9" font-size="10">Industry · 3.8%</text>
+
+                  <!-- Industry trendline (LIGHT GRAY now per user request) -->
+                  <path d="M 0 130 L 100 122 L 200 118 L 300 110 L 400 108 L 500 102 L 600 100 L 700 95" stroke="#d6dadf" stroke-width="2.5" fill="none"/>
+                  <circle cx="100" cy="122" r="3" fill="#b3b8be"/>
+                  <circle cx="300" cy="110" r="3" fill="#b3b8be"/>
+                  <circle cx="500" cy="102" r="3" fill="#b3b8be"/>
+                  <circle cx="700" cy="95" r="3.5" fill="#b3b8be"/>
+                  <text x="610" y="88" fill="#9099a1" font-size="10" font-weight="600">Industry · 3.8%</text>
+
+                  <!-- Top-25% target line (dashed teal) -->
+                  <line x1="0" y1="60" x2="700" y2="60" stroke="#007C89" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.55"/>
+                  <text x="14" y="55" fill="#007C89" font-size="10" font-weight="600">Top 25% · 5.6% (where you could land)</text>
+
+                  <!-- ANIMATED NUDGE DOT — bobbing, with ripple, on the target line -->
+                  <g class="nudge-group" transform="translate(560 60)">
+                    <circle class="nudge-ripple" cx="0" cy="0" r="5"/>
+                    <circle class="nudge-dot-core" cx="0" cy="0" r="6"/>
+                    <g class="nudge-arrow" transform="translate(0 -18)">
+                      <path d="M -4 4 L 0 -2 L 4 4" stroke="#007C89" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </g>
+                  </g>
+                  <text x="560" y="42" fill="#007C89" font-size="10" font-weight="700" text-anchor="middle" class="nudge-callout-text">You could be here</text>
                 </svg>
               </div>
               <div style="display:flex; justify-content: space-between; color: var(--mc-text-muted); font-size: 10px; margin-top: 4px;">
                 <span>Apr 04</span><span>Apr 12</span><span>Apr 20</span><span>Apr 28</span><span>May 03</span>
               </div>
+
+              <div class="coach-pill">
+                <span class="coach-icon">↑</span>
+                <span><strong>+1.8 pts above industry</strong> &nbsp;is what your peer top-quartile averages. <strong>Send a campaign to start your line.</strong></span>
+              </div>
+
               <div class="legend-line">
-                <span><span class="swatch sample-gray"></span>Aurora Beauty (sample data)</span>
-                <span><span class="swatch subtle-teal"></span>Beauty SMB benchmark (industry)</span>
-                <span><span class="swatch dotted-red"></span>Previous period</span>
+                <span><span class="swatch" style="background:#d6dadf"></span>Industry trendline</span>
+                <span><span class="swatch" style="background:#007C89; opacity:0.55; border-top: 1.5px dashed #007C89; height:0;"></span>Top 25% target</span>
+                <span>● Animated nudge dot · where you could land</span>
               </div>
             </div>
 
             <div class="chart-side-rail">
-              <div class="rail-row"><span class="rail-label">Total message count</span><span class="rail-value sample">12</span></div>
-              <div class="rail-row"><span class="rail-label">Total messages sent</span><span class="rail-value sample">8,940</span></div>
+              <div class="rail-row"><span class="rail-label">Industry msg count</span><span class="rail-value industry">12 / mo</span></div>
+              <div class="rail-row"><span class="rail-label">Industry msgs sent</span><span class="rail-value industry">8,940 / mo</span></div>
+              <div class="rail-row"><span class="rail-label">Top-25% msg count</span><span class="rail-value">18 / mo</span></div>
+              <div class="rail-row"><span class="rail-label">Top-25% msgs sent</span><span class="rail-value">14,200 / mo</span></div>
+              <div style="margin-top: 4px;">
+                <div class="streak-row"><span>Your industry streak</span><span><strong>0</strong> wks</span></div>
+                <div class="streak-bar"><div class="streak-bar-fill animate" style="--streak-pct: 0%;"></div></div>
+                <div class="streak-row"><span>Send 1 campaign / wk</span><span>to start your streak</span></div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Conversions — sample gray -->
+        <!-- ============ Conversions ============ -->
         <div class="card">
-          <span class="pill sample card-sample-tag">SAMPLE</span>
+          <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
           <div class="card-h">
             <div class="card-h-left">
               <h3 class="card-title">Conversions</h3>
-              <p class="card-subtitle">Aurora Beauty Co · Apr 4, 2026 · May 3, 2026 · <em style="color: var(--sample-text-strong); font-style: normal; font-weight: 600;">Sample data</em></p>
+              <p class="card-subtitle">Industry conversion funnel · 12,400 beauty SMBs · <em style="color: var(--industry-text-strong); font-style: normal; font-weight: 600;">Connect Shopify to plot yours</em></p>
             </div>
             <div class="card-h-right">
-              <button class="ctx-cta">Make this real · Connect Shopify</button>
+              <button class="ctx-cta">Connect Shopify · See your funnel</button>
             </div>
           </div>
 
@@ -1194,47 +1375,59 @@
 
           <div class="chart-headline-metric">
             <div>
-              <div class="chart-headline-label">Click rate</div>
-              <div class="chart-headline-value sample">4.2%</div>
-              <span class="chart-headline-delta sample">0.4 pts vs industry</span>
+              <div class="chart-headline-label">Industry click rate</div>
+              <div class="chart-headline-value industry">3.8%</div>
+            </div>
+            <div>
+              <div class="chart-headline-label">Top 25% beat</div>
+              <div class="chart-headline-bench" style="color: var(--mc-up);">5.6%</div>
             </div>
           </div>
 
           <div class="funnel">
             <div class="funnel-step">
               <span class="funnel-label">Deliveries</span>
-              <span class="funnel-num sample">8,940 <small>· 100%</small></span>
-              <div class="funnel-bar"><div class="funnel-bar-fill sample" style="width:100%"></div></div>
+              <span class="funnel-num industry">8,940 <small>· 100%</small></span>
+              <div class="funnel-bar"><div class="funnel-bar-fill industry" style="width:100%"></div></div>
+              <span class="funnel-dropoff">Industry baseline</span>
               <span class="funnel-arrow">→</span>
             </div>
             <div class="funnel-step">
               <span class="funnel-label">Opened</span>
-              <span class="funnel-num sample">2,360 <small>· 26.4%</small></span>
-              <div class="funnel-bar"><div class="funnel-bar-fill sample" style="width:26.4%"></div></div>
-              <span class="funnel-dropoff">▼ 73.6% drop-off</span>
+              <span class="funnel-num industry">2,154 <small>· 24.1%</small></span>
+              <div class="funnel-bar"><div class="funnel-bar-fill industry" style="width:24%"></div></div>
+              <span class="funnel-dropoff">Top 25% hit 28%+</span>
               <span class="funnel-arrow">→</span>
             </div>
             <div class="funnel-step">
               <span class="funnel-label">Clicked</span>
-              <span class="funnel-num sample">375 <small>· 4.2%</small></span>
-              <div class="funnel-bar"><div class="funnel-bar-fill sample" style="width:4.2%"></div></div>
-              <span class="funnel-dropoff">▼ 84% from opens</span>
+              <span class="funnel-num industry">340 <small>· 3.8%</small></span>
+              <div class="funnel-bar"><div class="funnel-bar-fill industry" style="width:3.8%"></div></div>
+              <span class="funnel-dropoff">Top 25% hit 5.6%+</span>
             </div>
+          </div>
+
+          <div class="coach-block">
+            <div class="coach-icon-lg">✦</div>
+            <div class="coach-block-text">
+              <strong>Beauty SMBs that connect Shopify earn <span class="coach-metric">$0.42 per email sent</span></strong> on average. Top-quartile: $0.71. Your funnel plots here once Shopify is connected — usually within 90 seconds.
+            </div>
+            <button class="ctx-cta-ghost">Connect Shopify</button>
           </div>
         </div>
 
-        <!-- Delivery — sample gray -->
+        <!-- ============ Delivery — animated nudge dot ============ -->
         <div class="card">
-          <span class="pill sample card-sample-tag">SAMPLE</span>
+          <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
           <div class="card-h">
             <div class="card-h-left">
               <h3 class="card-title">Delivery</h3>
-              <p class="card-subtitle">Aurora Beauty Co · Apr 4, 2026 · May 3, 2026 · <em style="color: var(--sample-text-strong); font-style: normal; font-weight: 600;">Sample data</em></p>
+              <p class="card-subtitle">Industry baseline · <em style="color: var(--industry-text-strong); font-style: normal; font-weight: 600;">99.4% delivery is healthy · below 97% means list quality issues</em></p>
             </div>
             <div class="card-h-right">
               <span class="right-meta">Metric: <span class="snowflake">✦</span> Abuse report rate ▾</span>
               <div class="toggle-group"><span class="active">Day</span><span>Week</span><span>Month</span></div>
-              <button class="ctx-cta">Make this real · Send first campaign</button>
+              <button class="ctx-cta">Send first campaign · Plot yours</button>
             </div>
           </div>
 
@@ -1242,8 +1435,8 @@
             <div>
               <div class="chart-headline-metric">
                 <div>
-                  <div class="chart-headline-label">Abuse report rate</div>
-                  <div class="chart-headline-value sample">0.01%</div>
+                  <div class="chart-headline-label">Industry abuse rate</div>
+                  <div class="chart-headline-value industry">0.01%</div>
                   <span class="perf-tag excellent" style="margin-left:6px;">Excellent zone</span>
                 </div>
               </div>
@@ -1253,49 +1446,91 @@
                   <line x1="0" y1="50" x2="700" y2="50" stroke="#f1f1ef" stroke-width="1"/>
                   <line x1="0" y1="100" x2="700" y2="100" stroke="#f1f1ef" stroke-width="1"/>
                   <line x1="0" y1="150" x2="700" y2="150" stroke="#f1f1ef" stroke-width="1"/>
-                  <!-- Aurora sample (gray) -->
-                  <polyline points="0,170 50,170 100,168 150,170 200,172 250,170 300,168 350,170 400,170 450,168 500,172 550,170 600,170 650,168 700,170" fill="none" stroke="#c8ccd1" stroke-width="2"/>
-                  <!-- Previous period dotted red -->
-                  <polyline points="0,168 100,170 200,166 300,168 400,170 500,168 600,166 700,168" fill="none" stroke="#D13438" stroke-width="1.5" stroke-dasharray="3 3"/>
-                  <!-- Industry subtle teal baseline -->
-                  <line x1="0" y1="170" x2="700" y2="170" stroke="#7fb8b9" stroke-width="1.5" stroke-dasharray="6 3"/>
-                  <text x="600" y="160" fill="#7a8088" font-size="10" font-weight="600">Aurora · 0.01%</text>
+
+                  <!-- Industry baseline (very light gray) -->
+                  <polyline points="0,170 50,170 100,168 150,170 200,172 250,170 300,168 350,170 400,170 450,168 500,172 550,170 600,170 650,168 700,170" fill="none" stroke="#d6dadf" stroke-width="2.5"/>
+                  <text x="600" y="160" fill="#9099a1" font-size="10" font-weight="600">Industry · 0.01%</text>
+
+                  <!-- Excellent target zone — your goal -->
+                  <line x1="0" y1="170" x2="700" y2="170" stroke="#007C89" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.55"/>
+
+                  <!-- Animated nudge dot at the excellent line, late position -->
+                  <g class="nudge-group" transform="translate(580 170)">
+                    <circle class="nudge-ripple" cx="0" cy="0" r="5"/>
+                    <circle class="nudge-dot-core" cx="0" cy="0" r="6"/>
+                    <g class="nudge-arrow" transform="translate(0 -18)">
+                      <path d="M -4 4 L 0 -2 L 4 4" stroke="#007C89" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                    </g>
+                  </g>
+                  <text x="580" y="152" fill="#007C89" font-size="10" font-weight="700" text-anchor="middle">Stay in the green zone</text>
                 </svg>
               </div>
               <div style="display:flex; justify-content: space-between; color: var(--mc-text-muted); font-size: 10px; margin-top: 4px;">
                 <span>Apr 04</span><span>Apr 06</span><span>Apr 08</span><span>Apr 10</span><span>Apr 12</span><span>Apr 14</span><span>Apr 16</span><span>Apr 18</span>
               </div>
+
+              <div class="coach-pill">
+                <span class="coach-icon">✓</span>
+                <span><strong>Most beauty SMBs land here on day one</strong> &nbsp;by sending only to opted-in subscribers. Your 15 subscribers are clean — you'll start green.</span>
+              </div>
+
               <div class="legend-line">
-                <span><span class="swatch sample-gray"></span>Aurora Beauty (sample data)</span>
-                <span><span class="swatch subtle-teal"></span>Industry baseline</span>
-                <span><span class="swatch dotted-red"></span>Previous period</span>
+                <span><span class="swatch" style="background:#d6dadf"></span>Industry baseline</span>
+                <span>● Animated nudge dot · target zone</span>
               </div>
             </div>
 
             <div class="chart-side-rail">
-              <div class="rail-rail-title">Delivery details</div>
-              <div class="rail-row"><span class="rail-label">Emails sent</span><span class="rail-value sample">8,940</span></div>
-              <div class="rail-row"><span class="rail-label">Deliveries</span><span class="rail-value sample">8,888</span></div>
-              <div class="rail-row"><span class="rail-label">Bounces</span><span class="rail-value sample">36</span></div>
-              <div class="rail-row"><span class="rail-label">Unsubscribed</span><span class="rail-value sample">27</span></div>
-              <div class="rail-row"><span class="rail-label">Abuse reports</span><span class="rail-value sample">1</span></div>
+              <div class="rail-rail-title">Industry delivery details</div>
+              <div class="rail-row"><span class="rail-label">Emails sent</span><span class="rail-value industry">8,940</span></div>
+              <div class="rail-row"><span class="rail-label">Deliveries</span><span class="rail-value industry">8,888</span></div>
+              <div class="rail-row"><span class="rail-label">Bounces</span><span class="rail-value industry">36</span></div>
+              <div class="rail-row"><span class="rail-label">Unsubscribed</span><span class="rail-value industry">27</span></div>
+              <div class="rail-row"><span class="rail-label">Abuse reports</span><span class="rail-value industry">1</span></div>
+              <div style="margin-top: 6px; padding-top: 8px; border-top: 1px solid var(--mc-border);">
+                <div class="rail-row"><span class="rail-label">Top-25% deliveries</span><span class="rail-value">99.7%</span></div>
+                <div class="rail-row"><span class="rail-label">Top-25% bounces</span><span class="rail-value">0.2%</span></div>
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Trophy shelf -->
+        <!-- ============ Beat the Industry — gamification card ============ -->
         <div class="card">
           <div class="card-h">
             <div class="card-h-left">
-              <h3 class="card-title">Your milestones</h3>
-              <p class="card-subtitle">Earn these by taking real actions · Sending streak unlocks Conversion Insights</p>
+              <h3 class="card-title">Beat the industry · your milestones</h3>
+              <p class="card-subtitle">Each milestone moves you closer to top-quartile · Sending streak unlocks Conversion Insights</p>
             </div>
           </div>
-          <div class="trophy-shelf">
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 8px;">
+            <div>
+              <div style="font-size: 12px; color: var(--mc-text-secondary); margin-bottom: 4px;">Goal: Open rate</div>
+              <div style="display:flex; align-items: baseline; gap: 8px;"><strong style="font-size: 22px; font-weight: 700;">—</strong><span style="font-size: 12px; color: var(--industry-text-strong);">vs. industry 24.1%</span></div>
+              <div class="streak-bar"><div class="streak-bar-fill animate" style="--streak-pct: 0%;"></div></div>
+              <div class="streak-row"><span>Send to start</span><span>Goal: <strong>28%</strong></span></div>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: var(--mc-text-secondary); margin-bottom: 4px;">Goal: Click rate</div>
+              <div style="display:flex; align-items: baseline; gap: 8px;"><strong style="font-size: 22px; font-weight: 700;">—</strong><span style="font-size: 12px; color: var(--industry-text-strong);">vs. industry 3.8%</span></div>
+              <div class="streak-bar"><div class="streak-bar-fill animate" style="--streak-pct: 0%;"></div></div>
+              <div class="streak-row"><span>Send to start</span><span>Goal: <strong>5.6%</strong></span></div>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: var(--mc-text-secondary); margin-bottom: 4px;">Goal: Revenue / email</div>
+              <div style="display:flex; align-items: baseline; gap: 8px;"><strong style="font-size: 22px; font-weight: 700;">—</strong><span style="font-size: 12px; color: var(--industry-text-strong);">vs. industry $0.42</span></div>
+              <div class="streak-bar"><div class="streak-bar-fill animate" style="--streak-pct: 0%;"></div></div>
+              <div class="streak-row"><span>Connect Shopify</span><span>Goal: <strong>$0.71</strong></span></div>
+            </div>
+          </div>
+
+          <div class="trophy-shelf" style="margin-top: 16px;">
             <div class="trophy earned">Account created</div>
             <div class="trophy earned">First 19 contacts imported</div>
-            <div class="trophy locked">Connect Shopify</div>
             <div class="trophy locked">Send first campaign</div>
+            <div class="trophy locked">Connect Shopify</div>
+            <div class="trophy locked">Beat the industry open rate</div>
             <div class="trophy locked">2-week sending streak</div>
             <div class="trophy locked">Unlock Conversion Insights</div>
           </div>
@@ -1315,9 +1550,9 @@
       bsci: '<b>Behavioral spine:</b> Reciprocity (Cialdini · Regan 1971) · Social proof (Goldstein/Cialdini 2008) · Curiosity gap (Loewenstein 1994).<br><b>Steals from:</b> Klaviyo Benchmarks · HubSpot inline industry medians.'
     },
     C: {
-      strong: "Concept C — Sample-data-led",
-      span: "Fully populated dashboard with realistic beauty-brand sample data, rendered in gray so it reads as not-real. Each card has a 'Make this real' CTA.",
-      bsci: '<b>Behavioral spine:</b> Curiosity gap · IKEA effect (Norton/Mochon/Ariely 2012) · Goal gradient (Hull · Duolingo) · Peak-end on first send (Kahneman 1993).<br><b>Steals from:</b> Stripe sandbox · Notion templates · Duolingo streaks · ActiveCampaign Smart Start.'
+      strong: "Concept C — Industry benchmark dashboard + animated nudge",
+      span: "Fully populated dashboard with anonymized industry benchmark numbers in light gray. Pulsing teal nudge dot on each chart shows where you could land. Coaching copy + streak bars gamify beating the industry.",
+      bsci: '<b>Behavioral spine:</b> Social proof + curiosity gap (Loewenstein 1994) · Goal gradient (Hull · Duolingo bobbing dot) · Peak-end on first send (Kahneman 1993) · Implementation intentions (Gollwitzer 1999, "beat the industry by X%").<br><b>Steals from:</b> Klaviyo Benchmarks percentile rank · Duolingo streak meter · Linear/Strava goal-line animation.'
     }
   };
 
