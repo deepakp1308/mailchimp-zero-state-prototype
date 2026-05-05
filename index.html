@@ -735,6 +735,11 @@
   .mc-nav a .icon { width: 16px; text-align: center; opacity: 0.8; font-size: 14px; }
   .mc-nav-sub { padding-left: 24px; font-size: 13px; }
   .mc-nav-sub a { padding: 6px 12px; font-size: 13px; }
+  .mc-nav a { cursor: pointer; }
+
+  /* Page routing */
+  .page-view { display: none; }
+  .page-view.active { display: block; }
 
   .csm-nudge {
     margin: 16px 12px 0;
@@ -1546,22 +1551,23 @@
     <div class="mc-logo"><span class="mc-logo-mark"></span></div>
     <div class="mc-create-btn">Create</div>
     <nav class="mc-nav">
-      <a href="#"><span class="icon">🏠</span>Home</a>
-      <a href="#"><span class="icon">📣</span>Campaigns</a>
-      <a href="#"><span class="icon">⚡</span>Automations</a>
-      <a href="#"><span class="icon">💬</span>SMS</a>
-      <a href="#"><span class="icon">📝</span>Forms<span class="badge-new">New</span></a>
-      <a href="#"><span class="icon">👥</span>Audience</a>
-      <a href="#" class="active"><span class="icon">📊</span>Analytics</a>
+      <a data-nav="home" onclick="setPage('home')"><span class="icon">🏠</span>Home</a>
+      <a data-nav="campaigns" onclick="setPage('marketing')"><span class="icon">📣</span>Campaigns</a>
+      <a><span class="icon">⚡</span>Automations</a>
+      <a><span class="icon">💬</span>SMS</a>
+      <a><span class="icon">📝</span>Forms<span class="badge-new">New</span></a>
+      <a><span class="icon">👥</span>Audience</a>
+      <a data-nav="analytics" class="active" onclick="setPage('marketing')"><span class="icon">📊</span>Analytics</a>
       <div class="mc-nav-sub">
-        <a href="#" class="active">Audience analytics</a>
-        <a href="#">Reports</a>
-        <a href="#">Conversion insights<span class="badge-new">New</span></a>
-        <a href="#">Custom reports</a>
+        <a data-nav="audience-analytics" onclick="setPage('audience')">Audience analytics</a>
+        <a data-nav="marketing-dashboard" class="active" onclick="setPage('marketing')">Marketing dashboard</a>
+        <a>Reports</a>
+        <a>Conversion insights<span class="badge-new">New</span></a>
+        <a>Custom reports</a>
       </div>
-      <a href="#"><span class="icon">🌐</span>Website</a>
-      <a href="#"><span class="icon">📦</span>Content</a>
-      <a href="#"><span class="icon">🔌</span>Integrations</a>
+      <a><span class="icon">🌐</span>Website</a>
+      <a><span class="icon">📦</span>Content</a>
+      <a><span class="icon">🔌</span>Integrations</a>
     </nav>
     <div class="csm-nudge">
       <span class="csm-nudge-tag">Time sensitive</span>
@@ -1578,11 +1584,12 @@
     </div>
 
     <div class="mc-content">
-      <h1 class="mc-page-title">Marketing dashboard</h1>
+      <h1 class="mc-page-title" id="page-title">Marketing dashboard</h1>
 
       <!-- ============================================================
-           Single concept: Industry benchmark + animated trajectory
+           PAGE: Marketing dashboard
            ============================================================ -->
+      <div class="page-view active" data-page="marketing">
       <div class="concept-view active" id="view-C">
 
         <div class="ai-banner">
@@ -2230,6 +2237,675 @@
         </div>
 
       </div>
+      </div>
+      <!-- /PAGE: Marketing dashboard -->
+
+      <!-- ============================================================
+           PAGE: Home
+           ============================================================ -->
+      <div class="page-view" data-page="home">
+
+        <!-- AI banner — Maya's home overview nudge -->
+        <div class="ai-banner">
+          <div class="ai-banner-text">
+            <strong><span class="snowflake">✦</span> Welcome back · Beauty SMBs your size <span class="pill beta">Beta</span></strong>
+            <em>Industry benchmarks across your whole business · 12,400 beauty/skincare brands · Send your first campaign or connect Shopify to compare yours.</em>
+          </div>
+          <button class="ctx-cta">Send first campaign</button>
+        </div>
+
+        <div class="filter-row">
+          <div class="filter-field"><span class="filter-label">Date range</span><div class="filter-input">Last 30 days 📅</div></div>
+          <div class="filter-field"><span class="filter-label">Comparison</span><div class="filter-input">Beauty SMBs · your size ▾</div></div>
+          <div class="bot-filter">Bot filtering on</div>
+          <div style="font-size: 12px; color: var(--mc-text-secondary); margin-left: auto; padding-bottom: 7px;">Compared to last 30 days</div>
+        </div>
+
+        <!-- ===== Marketing snapshot ===== -->
+        <div class="card" data-widget="home-snapshot">
+          <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
+          <div class="card-h">
+            <div class="card-h-left">
+              <h3 class="card-title">Marketing snapshot <span class="pill industry">Industry reference</span></h3>
+              <p class="card-subtitle">Beauty SMBs your size · last 30 days · <em style="color: var(--industry-text-strong); font-style: normal; font-weight: 600;">Send to plot yours</em></p>
+            </div>
+            <div class="card-h-right">
+              <div class="toggle-group"><span class="active">Email</span><span>SMS</span></div>
+              <button class="ctx-cta">Send first campaign</button>
+            </div>
+          </div>
+
+          <div class="metrics">
+            <div class="metric">
+              <span class="metric-label"><span class="snow">✦</span>Sends</span>
+              <span class="metric-value industry">8,940</span>
+              <span class="metric-delta industry">monthly median</span>
+              <svg class="metric-spark" viewBox="0 0 200 38" preserveAspectRatio="xMidYMid meet">
+                <line x1="0" y1="22" x2="200" y2="22" stroke="#d6dadf" stroke-width="1.5" stroke-dasharray="3 3"/>
+                <g class="traj-anim">
+                  <rect x="2"   y="32" width="14" height="6"  rx="2" fill="#0096a4" opacity="0.85"/>
+                  <rect x="18"  y="30" width="14" height="8"  rx="2" fill="#0096a4" opacity="0.85"/>
+                  <rect x="34"  y="28" width="14" height="10" rx="2" fill="#0096a4" opacity="0.85"/>
+                  <rect x="50"  y="26" width="14" height="12" rx="2" fill="#0096a4" opacity="0.85"/>
+                  <rect x="66"  y="24" width="14" height="14" rx="2" fill="#0096a4" opacity="0.9"/>
+                  <rect x="82"  y="22" width="14" height="16" rx="2" fill="#0096a4" opacity="0.9"/>
+                  <rect x="98"  y="20" width="14" height="18" rx="2" fill="#0096a4" opacity="0.9"/>
+                  <rect x="114" y="17" width="14" height="21" rx="2" fill="#0096a4" opacity="0.95"/>
+                  <rect x="130" y="14" width="14" height="24" rx="2" fill="#007C89"/>
+                  <rect x="146" y="11" width="14" height="27" rx="2" fill="#007C89"/>
+                  <rect x="162" y="8"  width="14" height="30" rx="2" fill="#007C89"/>
+                  <rect x="178" y="5"  width="14" height="33" rx="2" fill="#007C89"/>
+                </g>
+              </svg>
+            </div>
+            <div class="metric">
+              <span class="metric-label"><span class="snow">✦</span>Open rate</span>
+              <span class="metric-value industry">24.1%</span>
+              <span class="perf-tag good">Industry median</span>
+              <svg class="metric-spark" viewBox="0 0 200 38" preserveAspectRatio="xMidYMid meet">
+                <defs>
+                  <linearGradient id="snapAreaOpen" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#007C89" stop-opacity="0.45"/>
+                    <stop offset="100%" stop-color="#007C89" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <line x1="0" y1="22" x2="200" y2="20" stroke="#d6dadf" stroke-width="1.5" stroke-dasharray="3 3"/>
+                <path class="traj-anim" fill="url(#snapAreaOpen)" d="M 0 36 C 30 32, 60 28, 100 18 C 140 8, 170 4, 200 2 L 200 38 L 0 38 Z"/>
+                <path class="traj-line animate traj-anim" style="--traj-len: 260;" d="M 0 36 C 30 32, 60 28, 100 18 C 140 8, 170 4, 200 2"/>
+                <circle class="traj-ripple animate traj-anim" cx="200" cy="2" r="3"/>
+                <circle class="traj-dot animate traj-anim" cx="200" cy="2" r="4"/>
+              </svg>
+            </div>
+            <div class="metric">
+              <span class="metric-label"><span class="snow">✦</span>Click rate</span>
+              <span class="metric-value industry">3.8%</span>
+              <span class="perf-tag good">Industry median</span>
+              <svg class="metric-spark" viewBox="0 0 200 38" preserveAspectRatio="xMidYMid meet">
+                <line x1="0" y1="22" x2="200" y2="22" stroke="#d6dadf" stroke-width="1.5" stroke-dasharray="3 3"/>
+                <polyline class="traj-line animate traj-anim" style="--traj-len: 320;" fill="none"
+                  points="0,32 30,32 30,26 70,26 70,20 110,20 110,14 150,14 150,8 200,8" stroke-dasharray="2 4"/>
+                <circle cx="30" cy="26" r="1.6" fill="#007C89" opacity="0.7"/>
+                <circle cx="70" cy="20" r="1.6" fill="#007C89" opacity="0.8"/>
+                <circle cx="110" cy="14" r="1.6" fill="#007C89" opacity="0.85"/>
+                <circle cx="150" cy="8" r="1.6" fill="#007C89" opacity="0.9"/>
+                <circle class="traj-ripple animate traj-anim" cx="200" cy="8" r="3"/>
+                <circle class="traj-dot animate traj-anim" cx="200" cy="8" r="4"/>
+              </svg>
+            </div>
+            <div class="metric">
+              <span class="metric-label"><span class="snow">✦</span>Revenue / email</span>
+              <span class="metric-value industry">$0.42</span>
+              <span class="perf-tag good">Top 25% earn $0.71</span>
+            </div>
+          </div>
+
+          <div class="coach-block">
+            <div class="coach-icon-lg">✦</div>
+            <div class="coach-block-text">
+              <strong>Beauty brands like yours earn <span class="coach-metric">$0.42 per email</span></strong> on average. Top quartile: <strong style="color: var(--mc-up);">$0.71</strong>. Send your first campaign and connect Shopify to plot all four metrics here.
+            </div>
+            <button class="ctx-cta-ghost">Marketing dashboard →</button>
+          </div>
+        </div>
+
+        <!-- ===== Audience + Revenue side-by-side row ===== -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+
+          <!-- Audience card -->
+          <div class="card" data-widget="home-audience">
+            <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
+            <div class="card-h">
+              <div class="card-h-left">
+                <h3 class="card-title">Audience</h3>
+                <p class="card-subtitle">Your contacts vs. industry median</p>
+              </div>
+              <div class="card-h-right">
+                <button class="ctx-cta-ghost">Audience analytics →</button>
+              </div>
+            </div>
+
+            <!-- Donut: subscribed / non-subscribed / unsubscribed -->
+            <div style="display: flex; align-items: center; gap: 24px; margin-top: 8px;">
+              <svg viewBox="0 0 160 160" preserveAspectRatio="xMidYMid meet" style="width: 160px; height: 160px; flex-shrink: 0;">
+                <!-- Donut: 15 subscribed (79%), 4 unsubscribed (21%), 0 non-subscribed -->
+                <!-- circumference for r=60 ≈ 377 -->
+                <circle cx="80" cy="80" r="60" fill="none" stroke="#f1f1ef" stroke-width="20"/>
+                <circle cx="80" cy="80" r="60" fill="none" stroke="#007C89" stroke-width="20"
+                        stroke-dasharray="298 377" transform="rotate(-90 80 80)" stroke-linecap="round" class="traj-anim"/>
+                <circle cx="80" cy="80" r="60" fill="none" stroke="#A78BFA" stroke-width="20"
+                        stroke-dasharray="79 377" stroke-dashoffset="-298" transform="rotate(-90 80 80)" stroke-linecap="round"/>
+                <text x="80" y="76" fill="#241C15" font-size="22" font-weight="700" text-anchor="middle">19</text>
+                <text x="80" y="94" fill="#9099a1" font-size="10" text-anchor="middle">total contacts</text>
+              </svg>
+              <div style="flex: 1; display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+                <div style="display: flex; justify-content: space-between; gap: 12px;">
+                  <span><span style="display:inline-block; width:10px; height:10px; background:#007C89; border-radius:2px; margin-right:6px;"></span>Subscribed</span>
+                  <strong>15</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; gap: 12px;">
+                  <span><span style="display:inline-block; width:10px; height:10px; background:#A78BFA; border-radius:2px; margin-right:6px;"></span>Unsubscribed</span>
+                  <strong>4</strong>
+                </div>
+                <div style="display: flex; justify-content: space-between; gap: 12px;">
+                  <span><span style="display:inline-block; width:10px; height:10px; background:#f1f1ef; border:1px solid var(--mc-border); border-radius:2px; margin-right:6px;"></span>Non-subscribed</span>
+                  <strong>0</strong>
+                </div>
+                <div style="margin-top: 8px; padding-top: 8px; border-top: 1px solid var(--mc-border); font-size: 12px;">
+                  <div style="color: var(--mc-text-secondary); margin-bottom: 4px;">Net subscriber growth</div>
+                  <div style="display: flex; align-items: baseline; gap: 6px;"><strong style="font-size: 18px;">0</strong><span style="color: var(--industry-text-strong);">vs. industry +47/mo</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="coach-pill">
+              <span class="coach-icon">↑</span>
+              <span><strong>Beauty SMBs grow ~47 contacts/month</strong> &nbsp;by adding a sign-up form. <strong>You're at zero growth — let's fix that.</strong></span>
+            </div>
+          </div>
+
+          <!-- Revenue card -->
+          <div class="card" data-widget="home-revenue">
+            <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
+            <div class="card-h">
+              <div class="card-h-left">
+                <h3 class="card-title">Revenue</h3>
+                <p class="card-subtitle">Industry $/email · 12,400 beauty SMBs</p>
+              </div>
+              <div class="card-h-right">
+                <button class="ctx-cta">Connect Shopify</button>
+              </div>
+            </div>
+
+            <!-- Gauge for revenue per email -->
+            <div style="display: flex; align-items: center; gap: 16px; margin-top: 8px;">
+              <svg viewBox="0 0 200 120" preserveAspectRatio="xMidYMid meet" style="width: 200px; height: 120px; flex-shrink: 0;">
+                <defs>
+                  <linearGradient id="homeRevGauge" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#FADCD4"/>
+                    <stop offset="50%" stop-color="#fbe9c4"/>
+                    <stop offset="100%" stop-color="#D1E9CE"/>
+                  </linearGradient>
+                </defs>
+                <path d="M 20 100 A 80 80 0 0 1 180 100" stroke="url(#homeRevGauge)" stroke-width="14" fill="none" stroke-linecap="round"/>
+                <line x1="100" y1="100" x2="120" y2="22" stroke="#9099a1" stroke-width="2" stroke-linecap="round"/>
+                <circle cx="120" cy="22" r="3" fill="#9099a1"/>
+                <line x1="100" y1="100" x2="170" y2="60" stroke="#1AAB68" stroke-width="2" stroke-linecap="round" opacity="0.7"/>
+                <g class="traj-anim" style="transform-origin: 100px 100px;">
+                  <line x1="100" y1="100" x2="170" y2="60" stroke="#007C89" stroke-width="3.5" stroke-linecap="round"/>
+                  <circle class="traj-ripple animate" cx="170" cy="60" r="6"/>
+                  <circle class="traj-dot animate" cx="170" cy="60" r="5"/>
+                </g>
+                <circle cx="100" cy="100" r="6" fill="#241C15"/>
+                <circle cx="100" cy="100" r="3" fill="#fff"/>
+                <text x="100" y="92" fill="#241C15" font-size="22" font-weight="700" text-anchor="middle">—</text>
+                <text x="20" y="116" fill="#9099a1" font-size="9" text-anchor="middle">$0</text>
+                <text x="180" y="116" fill="#9099a1" font-size="9" text-anchor="middle">$1.00</text>
+              </svg>
+              <div style="flex: 1; font-size: 13px;">
+                <div style="color: var(--mc-text-secondary); font-size: 12px;">Revenue per email</div>
+                <div style="display: flex; align-items: baseline; gap: 8px; margin-top: 2px;"><strong style="font-size: 22px;">—</strong><span style="color: var(--industry-text-strong);">vs. industry $0.42</span></div>
+                <div style="margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--mc-border); font-size: 12px; color: var(--mc-text-secondary); line-height: 1.5;">Connect a store to plot your trajectory. Most peers connect in ~90 seconds.</div>
+                <div style="display: flex; gap: 6px; flex-wrap: wrap; margin-top: 8px;">
+                  <span class="pill" style="background: #f1f1ef; color: var(--mc-text); font-size: 10px;">🛍️ Shopify</span>
+                  <span class="pill" style="background: #f1f1ef; color: var(--mc-text); font-size: 10px;">WooCommerce</span>
+                  <span class="pill" style="background: #f1f1ef; color: var(--mc-text); font-size: 10px;">Wix</span>
+                  <span class="pill" style="background: #f1f1ef; color: var(--mc-text); font-size: 10px;">Squarespace</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Recent campaigns ===== -->
+        <div class="card" data-widget="home-campaigns" style="margin-top: 16px;">
+          <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
+          <div class="card-h">
+            <div class="card-h-left">
+              <h3 class="card-title">Recent campaigns</h3>
+              <p class="card-subtitle">Industry sending cadence · Beauty SMBs your size</p>
+            </div>
+            <div class="card-h-right">
+              <button class="ctx-cta">Create email · 90 seconds</button>
+            </div>
+          </div>
+
+          <!-- Heatmap-style cadence chart -->
+          <div style="font-size: 12px; color: var(--mc-text-secondary); margin-top: 12px;">Industry sending cadence — peer top performers send <strong style="color: var(--mc-text);">3× per week</strong></div>
+          <div style="display: grid; grid-template-columns: 60px repeat(7, 1fr); gap: 4px; margin-top: 12px;">
+            <span></span>
+            <span style="font-size: 10px; color: var(--mc-text-muted); text-align: center;">M</span>
+            <span style="font-size: 10px; color: var(--mc-text-muted); text-align: center;">T</span>
+            <span style="font-size: 10px; color: var(--mc-text-muted); text-align: center;">W</span>
+            <span style="font-size: 10px; color: var(--mc-text-muted); text-align: center;">T</span>
+            <span style="font-size: 10px; color: var(--mc-text-muted); text-align: center;">F</span>
+            <span style="font-size: 10px; color: var(--mc-text-muted); text-align: center;">S</span>
+            <span style="font-size: 10px; color: var(--mc-text-muted); text-align: center;">S</span>
+            <span style="font-size: 11px; color: var(--mc-text-secondary);">Wk 1</span>
+            <div style="height: 22px; background: #d6dadf; border-radius: 3px;"></div>
+            <div style="height: 22px; background: #007C89; border-radius: 3px; opacity: 0.85;"></div>
+            <div style="height: 22px; background: #d6dadf; border-radius: 3px;"></div>
+            <div style="height: 22px; background: #007C89; border-radius: 3px; opacity: 0.85;"></div>
+            <div style="height: 22px; background: #d6dadf; border-radius: 3px;"></div>
+            <div style="height: 22px; background: #007C89; border-radius: 3px;"></div>
+            <div style="height: 22px; background: #d6dadf; border-radius: 3px;"></div>
+            <span style="font-size: 11px; color: var(--mc-text-secondary);">Wk 2</span>
+            <div style="height: 22px; background: #007C89; border-radius: 3px; opacity: 0.85;"></div>
+            <div style="height: 22px; background: #d6dadf; border-radius: 3px;"></div>
+            <div style="height: 22px; background: #007C89; border-radius: 3px;"></div>
+            <div style="height: 22px; background: #d6dadf; border-radius: 3px;"></div>
+            <div style="height: 22px; background: #007C89; border-radius: 3px; opacity: 0.85;"></div>
+            <div style="height: 22px; background: #d6dadf; border-radius: 3px;"></div>
+            <div style="height: 22px; background: #d6dadf; border-radius: 3px;"></div>
+            <span style="font-size: 11px; color: var(--mc-text-secondary);">Wk 3</span>
+            <div style="height: 22px; background: #d6dadf; border-radius: 3px;"></div>
+            <div style="height: 22px; background: #007C89; border-radius: 3px;"></div>
+            <div style="height: 22px; background: #d6dadf; border-radius: 3px;"></div>
+            <div style="height: 22px; background: #007C89; border-radius: 3px;"></div>
+            <div style="height: 22px; background: #d6dadf; border-radius: 3px;"></div>
+            <div style="height: 22px; background: #007C89; border-radius: 3px; opacity: 0.85;"></div>
+            <div style="height: 22px; background: #d6dadf; border-radius: 3px;"></div>
+            <span style="font-size: 11px; color: var(--mc-text-secondary);">Wk 4 · You</span>
+            <div class="traj-anim" style="height: 22px; background: linear-gradient(135deg, #fff 25%, #fafafa 25%, #fafafa 50%, #fff 50%, #fff 75%, #fafafa 75%); border: 1px dashed #007C89; border-radius: 3px; opacity: 0.85;"></div>
+            <div class="traj-anim" style="height: 22px; background: linear-gradient(135deg, #fff 25%, #fafafa 25%, #fafafa 50%, #fff 50%, #fff 75%, #fafafa 75%); border: 1px dashed #007C89; border-radius: 3px; opacity: 0.85;"></div>
+            <div class="traj-anim" style="height: 22px; background: linear-gradient(135deg, #fff 25%, #fafafa 25%, #fafafa 50%, #fff 50%, #fff 75%, #fafafa 75%); border: 1px dashed #007C89; border-radius: 3px; opacity: 0.85;"></div>
+            <div class="traj-anim" style="height: 22px; background: linear-gradient(135deg, #fff 25%, #fafafa 25%, #fafafa 50%, #fff 50%, #fff 75%, #fafafa 75%); border: 1px dashed #007C89; border-radius: 3px; opacity: 0.85;"></div>
+            <div class="traj-anim" style="height: 22px; background: linear-gradient(135deg, #fff 25%, #fafafa 25%, #fafafa 50%, #fff 50%, #fff 75%, #fafafa 75%); border: 1px dashed #007C89; border-radius: 3px; opacity: 0.85;"></div>
+            <div class="traj-anim" style="height: 22px; background: linear-gradient(135deg, #fff 25%, #fafafa 25%, #fafafa 50%, #fff 50%, #fff 75%, #fafafa 75%); border: 1px dashed #007C89; border-radius: 3px; opacity: 0.85;"></div>
+            <div class="traj-anim" style="height: 22px; background: linear-gradient(135deg, #fff 25%, #fafafa 25%, #fafafa 50%, #fff 50%, #fff 75%, #fafafa 75%); border: 1px dashed #007C89; border-radius: 3px; opacity: 0.85;"></div>
+          </div>
+          <div style="display: flex; gap: 16px; margin-top: 12px; font-size: 11px; color: var(--mc-text-secondary);">
+            <span><span style="display:inline-block; width:12px; height:12px; background:#007C89; border-radius:2px; vertical-align:middle; margin-right:4px;"></span>Industry send day</span>
+            <span><span style="display:inline-block; width:12px; height:12px; background:#d6dadf; border-radius:2px; vertical-align:middle; margin-right:4px;"></span>Quiet day</span>
+            <span><span style="display:inline-block; width:12px; height:12px; border:1px dashed #007C89; border-radius:2px; vertical-align:middle; margin-right:4px;"></span>Your week — empty, ready to fill</span>
+          </div>
+          <div class="coach-pill">
+            <span class="coach-icon">↑</span>
+            <span><strong>Pick 3 days this week</strong> &nbsp;and let's send. Most beauty brands earn 60% of email revenue from a 3×/week cadence.</span>
+          </div>
+        </div>
+
+      </div>
+      <!-- /PAGE: Home -->
+
+      <!-- ============================================================
+           PAGE: Audience analytics
+           ============================================================ -->
+      <div class="page-view" data-page="audience">
+
+        <!-- AI banner — Maya's audience nudge -->
+        <div class="ai-banner">
+          <div class="ai-banner-text">
+            <strong><span class="snowflake">✦</span> Audience benchmarks · Beauty SMBs your size <span class="pill beta">Beta</span></strong>
+            <em>Real anonymized data from 12,400 brands. The pulsing teal markers show how your contact list could grow — and where peers find their best subscribers.</em>
+          </div>
+          <button class="ctx-cta">Add a sign-up form</button>
+        </div>
+
+        <div class="filter-row">
+          <div class="filter-field"><span class="filter-label">Audience</span><div class="filter-input teal-border">Collaborators ▾</div></div>
+          <div class="filter-field"><span class="filter-label">Date range</span><div class="filter-input">Last 30 days 📅</div></div>
+          <div class="filter-field"><span class="filter-label">Comparison</span><div class="filter-input">Beauty SMBs · your size ▾</div></div>
+          <div class="bot-filter">Bot filtering on</div>
+        </div>
+
+        <!-- ===== Audience Overview ===== -->
+        <div class="card" data-widget="aud-overview">
+          <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
+          <div class="card-h">
+            <div class="card-h-left">
+              <h3 class="card-title">Audience Overview</h3>
+              <p class="card-subtitle">Apr 4, 2026 · May 3, 2026 · Compared to industry median</p>
+            </div>
+            <div class="card-h-right">
+              <div class="toggle-group"><span class="active">All</span><span>Email</span><span>SMS</span></div>
+            </div>
+          </div>
+
+          <div class="metrics">
+            <div class="metric">
+              <span class="metric-label">Total contacts</span>
+              <span class="metric-value">19</span>
+              <div class="bench-row"><span class="bench-label">Industry median:</span><span class="bench-value">1,240</span></div>
+              <!-- Mini bar comparison -->
+              <svg class="metric-spark" viewBox="0 0 200 38" preserveAspectRatio="xMidYMid meet">
+                <line x1="0" y1="20" x2="200" y2="20" stroke="#d6dadf" stroke-width="1" stroke-dasharray="3 3"/>
+                <text x="0" y="14" fill="#9099a1" font-size="9">You</text>
+                <rect x="22" y="9" width="3" height="12" fill="#0070D2" rx="1"/>
+                <text x="0" y="34" fill="#9099a1" font-size="9">Ind.</text>
+                <rect class="traj-anim" x="22" y="26" width="170" height="10" fill="#7fb8b9" rx="2"/>
+                <circle class="traj-dot animate traj-anim" cx="192" cy="31" r="3"/>
+              </svg>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Subscribed</span>
+              <span class="metric-value">15</span>
+              <div class="bench-row"><span class="bench-label">Industry:</span><span class="bench-value">1,160 (94%)</span></div>
+              <span class="perf-tag good" style="margin-top: 4px; width: fit-content;">79% subscribed</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Non-Subscribed</span>
+              <span class="metric-value">0</span>
+              <div class="bench-row"><span class="bench-label">Industry:</span><span class="bench-value">35 (3%)</span></div>
+              <span class="perf-tag excellent" style="margin-top: 4px; width: fit-content;">Excellent</span>
+            </div>
+            <div class="metric">
+              <span class="metric-label">Unsubscribed</span>
+              <span class="metric-value">4</span>
+              <div class="bench-row"><span class="bench-label">Industry:</span><span class="bench-value">45 (3.6%)</span></div>
+              <span class="perf-tag fair" style="margin-top: 4px; width: fit-content;">21% — review list</span>
+            </div>
+          </div>
+
+          <div class="coach-block">
+            <div class="coach-icon-lg">✦</div>
+            <div class="coach-block-text">
+              <strong>Industry median is <span class="coach-metric">1,240 contacts</span></strong> for beauty SMBs your size. You have 19. Top growth lever: a sign-up form on your store + first welcome campaign within 7 days.
+            </div>
+            <button class="ctx-cta-ghost">Add sign-up form</button>
+          </div>
+        </div>
+
+        <!-- ===== Contacts over time ===== -->
+        <div class="card" data-widget="aud-contacts-time">
+          <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
+          <div class="card-h">
+            <div class="card-h-left">
+              <h3 class="card-title">Contacts over time</h3>
+              <p class="card-subtitle">Your flat line vs. industry growth curve · Beauty SMBs your size</p>
+            </div>
+            <div class="card-h-right">
+              <span class="right-meta">Metric: <span class="snowflake">✦</span> Email subscribers ▾</span>
+              <div class="toggle-group"><span class="active">Day</span><span>Week</span><span>Month</span></div>
+              <button class="ctx-cta">Add sign-up form</button>
+            </div>
+          </div>
+
+          <div class="chart-svg-wrap">
+            <svg viewBox="0 0 700 200" preserveAspectRatio="xMidYMid meet">
+              <defs>
+                <linearGradient id="audContactsFill" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="0%" stop-color="#007C89" stop-opacity="0.4"/>
+                  <stop offset="100%" stop-color="#007C89" stop-opacity="0"/>
+                </linearGradient>
+              </defs>
+              <line x1="0" y1="50"  x2="700" y2="50"  stroke="#f1f1ef" stroke-width="1"/>
+              <line x1="0" y1="100" x2="700" y2="100" stroke="#f1f1ef" stroke-width="1"/>
+              <line x1="0" y1="150" x2="700" y2="150" stroke="#f1f1ef" stroke-width="1"/>
+
+              <!-- Your line — flat at 19 (high y, near bottom) -->
+              <line x1="0" y1="170" x2="700" y2="170" stroke="#0070D2" stroke-width="2.5"/>
+              <circle cx="700" cy="170" r="3.5" fill="#0070D2"/>
+              <text x="610" y="164" fill="#0070D2" font-size="10" font-weight="600">You · 19</text>
+
+              <!-- Industry curve climbing to ~1,240 (low y, top) -->
+              <path d="M 0 165 C 100 158, 200 148, 300 130 C 400 110, 500 88, 700 60" stroke="#d6dadf" stroke-width="2.5" fill="none"/>
+              <text x="610" y="56" fill="#9099a1" font-size="10" font-weight="600">Industry · 1,240</text>
+
+              <!-- Top 25% target -->
+              <line x1="0" y1="30" x2="700" y2="30" stroke="#007C89" stroke-width="1.5" stroke-dasharray="5 4" opacity="0.4"/>
+              <text x="14" y="24" fill="#007C89" font-size="10" font-weight="600">Top 25% · 2,800+</text>
+
+              <!-- "Your projected with sign-up form" trajectory -->
+              <path class="traj-fill animate" style="fill: url(#audContactsFill)"
+                    d="M 0 170 C 100 168, 200 160, 300 140 C 400 110, 500 80, 700 50 L 700 200 L 0 200 Z"/>
+              <path class="traj-line animate traj-anim" style="--traj-len: 1280;"
+                    d="M 0 170 C 100 168, 200 160, 300 140 C 400 110, 500 80, 700 50"/>
+              <circle class="traj-ripple animate traj-anim" cx="700" cy="50" r="5"/>
+              <circle class="traj-dot animate traj-anim" cx="700" cy="50" r="6"/>
+              <g class="traj-callout animate traj-anim">
+                <rect x="540" y="14" width="160" height="22" rx="11" fill="#007C89"/>
+                <text x="620" y="29" fill="#fff" font-size="11" font-weight="700" text-anchor="middle">↑ With sign-up form · 2,800</text>
+              </g>
+            </svg>
+          </div>
+          <div style="display:flex; justify-content: space-between; color: var(--mc-text-muted); font-size: 10px; margin-top: 4px;">
+            <span>Apr 04</span><span>Apr 12</span><span>Apr 20</span><span>Apr 28</span><span>May 03</span>
+          </div>
+          <div class="legend-line">
+            <span><span class="swatch" style="background:#0070D2"></span>You · flat at 19</span>
+            <span><span class="swatch" style="background:#d6dadf"></span>Industry growth</span>
+            <span><span class="swatch" style="background:#007C89; opacity:0.45;"></span>Top 25% target</span>
+            <span><span class="swatch" style="background:#007C89; border-style: dotted;"></span>Your projected with sign-up form</span>
+          </div>
+        </div>
+
+        <!-- ===== Source performance ===== -->
+        <div class="card" data-widget="aud-source-perf">
+          <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
+          <div class="card-h">
+            <div class="card-h-left">
+              <h3 class="card-title">Source performance</h3>
+              <p class="card-subtitle">Which sources drive contacts · You vs. industry breakdown</p>
+            </div>
+            <div class="card-h-right">
+              <button class="ctx-cta">Connect Meta Lead Ads</button>
+            </div>
+          </div>
+
+          <!-- Stacked horizontal bars per source -->
+          <div style="display: grid; grid-template-columns: 140px 1fr 80px 80px; gap: 8px 14px; margin-top: 12px; font-size: 12px; align-items: center;">
+            <div style="font-weight: 600; color: var(--mc-text-secondary); font-size: 11px;">Source</div>
+            <div style="font-weight: 600; color: var(--mc-text-secondary); font-size: 11px;">Industry contacts (typical)</div>
+            <div style="font-weight: 600; color: var(--mc-text-secondary); font-size: 11px; text-align: right;">You</div>
+            <div style="font-weight: 600; color: var(--mc-text-secondary); font-size: 11px; text-align: right;">Industry</div>
+
+            <!-- Sign-up form row -->
+            <div>📝 Sign-up form</div>
+            <div style="background: var(--mc-ghost); height: 18px; border-radius: 3px; overflow: hidden;"><div class="traj-anim" style="background: #7fb8b9; height: 100%; width: 42%;"></div></div>
+            <div style="text-align: right; color: var(--sample-text);">0</div>
+            <div style="text-align: right; color: var(--bench-subtle-teal); font-weight: 600;">520</div>
+
+            <!-- Shopify row -->
+            <div>🛍️ Shopify connect</div>
+            <div style="background: var(--mc-ghost); height: 18px; border-radius: 3px; overflow: hidden;"><div class="traj-anim" style="background: #7fb8b9; height: 100%; width: 30%;"></div></div>
+            <div style="text-align: right; color: var(--sample-text);">0</div>
+            <div style="text-align: right; color: var(--bench-subtle-teal); font-weight: 600;">370</div>
+
+            <!-- Meta lead ads -->
+            <div>📘 Meta lead ads</div>
+            <div style="background: var(--mc-ghost); height: 18px; border-radius: 3px; overflow: hidden;"><div class="traj-anim" style="background: #7fb8b9; height: 100%; width: 18%;"></div></div>
+            <div style="text-align: right; color: var(--sample-text);">0</div>
+            <div style="text-align: right; color: var(--bench-subtle-teal); font-weight: 600;">220</div>
+
+            <!-- Import (yours) -->
+            <div>📂 Import</div>
+            <div style="background: var(--mc-ghost); height: 18px; border-radius: 3px; overflow: hidden; position: relative;">
+              <div style="background: #0070D2; height: 100%; width: 1.5%;"></div>
+              <div class="traj-anim" style="background: #7fb8b9; height: 100%; width: 10%; position: absolute; top: 0; left: 0; opacity: 0.3;"></div>
+            </div>
+            <div style="text-align: right; color: #0070D2; font-weight: 600;">19</div>
+            <div style="text-align: right; color: var(--bench-subtle-teal); font-weight: 600;">130</div>
+          </div>
+
+          <div class="coach-block">
+            <div class="coach-icon-lg">✦</div>
+            <div class="coach-block-text">
+              <strong>Top growth source for beauty SMBs: <span class="coach-metric">Sign-up form</span></strong> (42% of typical contacts). Your only source today is Import. Add a sign-up form and a Shopify connect to unlock the top 3 channels.
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Source performance over time ===== -->
+        <div class="card" data-widget="aud-source-time">
+          <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
+          <div class="card-h">
+            <div class="card-h-left">
+              <h3 class="card-title">Source performance over time</h3>
+              <p class="card-subtitle">Industry stacked sources · Beauty SMBs your size</p>
+            </div>
+            <div class="card-h-right">
+              <span class="right-meta">Metric: <span class="snowflake">✦</span> Contacts ▾</span>
+              <div class="toggle-group"><span>Day</span><span>Week</span><span class="active">Month</span></div>
+              <button class="ctx-cta">Add sign-up form</button>
+            </div>
+          </div>
+
+          <!-- Stacked bar over time -->
+          <div class="chart-svg-wrap" style="height: 220px;">
+            <svg viewBox="0 0 700 220" preserveAspectRatio="xMidYMid meet">
+              <line x1="60" y1="40"  x2="700" y2="40"  stroke="#f1f1ef" stroke-width="1"/>
+              <line x1="60" y1="90"  x2="700" y2="90"  stroke="#f1f1ef" stroke-width="1"/>
+              <line x1="60" y1="140" x2="700" y2="140" stroke="#f1f1ef" stroke-width="1"/>
+              <line x1="60" y1="180" x2="700" y2="180" stroke="#241C15" stroke-width="1"/>
+
+              <!-- Y axis labels -->
+              <text x="50" y="44"  fill="#9099a1" font-size="11" text-anchor="end">1.5k</text>
+              <text x="50" y="94"  fill="#9099a1" font-size="11" text-anchor="end">1.0k</text>
+              <text x="50" y="144" fill="#9099a1" font-size="11" text-anchor="end">500</text>
+              <text x="50" y="184" fill="#9099a1" font-size="11" text-anchor="end">0</text>
+
+              <!-- 6 stacked monthly bars: Sign-up + Shopify + Meta + Import -->
+              <!-- Total ~1240 in last bar; bars climb -->
+              <g class="traj-anim">
+                <!-- Mar -->
+                <g transform="translate(86 0)">
+                  <rect x="0" y="155" width="44" height="25" fill="#0070D2" rx="2"/>
+                  <rect x="0" y="135" width="44" height="20" fill="#A78BFA" rx="0"/>
+                  <rect x="0" y="120" width="44" height="15" fill="#EC4899" rx="0"/>
+                  <rect x="0" y="105" width="44" height="15" fill="#00B2A9" rx="2"/>
+                </g>
+                <!-- Apr -->
+                <g transform="translate(186 0)">
+                  <rect x="0" y="153" width="44" height="27" fill="#0070D2" rx="2"/>
+                  <rect x="0" y="128" width="44" height="25" fill="#A78BFA" rx="0"/>
+                  <rect x="0" y="108" width="44" height="20" fill="#EC4899" rx="0"/>
+                  <rect x="0" y="88"  width="44" height="20" fill="#00B2A9" rx="2"/>
+                </g>
+                <!-- May -->
+                <g transform="translate(286 0)">
+                  <rect x="0" y="150" width="44" height="30" fill="#0070D2" rx="2"/>
+                  <rect x="0" y="120" width="44" height="30" fill="#A78BFA" rx="0"/>
+                  <rect x="0" y="95"  width="44" height="25" fill="#EC4899" rx="0"/>
+                  <rect x="0" y="70"  width="44" height="25" fill="#00B2A9" rx="2"/>
+                </g>
+                <!-- Jun -->
+                <g transform="translate(386 0)">
+                  <rect x="0" y="148" width="44" height="32" fill="#0070D2" rx="2"/>
+                  <rect x="0" y="113" width="44" height="35" fill="#A78BFA" rx="0"/>
+                  <rect x="0" y="83"  width="44" height="30" fill="#EC4899" rx="0"/>
+                  <rect x="0" y="55"  width="44" height="28" fill="#00B2A9" rx="2"/>
+                </g>
+                <!-- Jul -->
+                <g transform="translate(486 0)">
+                  <rect x="0" y="146" width="44" height="34" fill="#0070D2" rx="2"/>
+                  <rect x="0" y="106" width="44" height="40" fill="#A78BFA" rx="0"/>
+                  <rect x="0" y="71"  width="44" height="35" fill="#EC4899" rx="0"/>
+                  <rect x="0" y="40"  width="44" height="31" fill="#00B2A9" rx="2"/>
+                </g>
+                <!-- Aug (your projected target month) -->
+                <g transform="translate(586 0)">
+                  <rect x="0" y="143" width="44" height="37" fill="#0070D2" rx="2"/>
+                  <rect x="0" y="98"  width="44" height="45" fill="#A78BFA" rx="0"/>
+                  <rect x="0" y="58"  width="44" height="40" fill="#EC4899" rx="0"/>
+                  <rect x="0" y="20"  width="44" height="38" fill="#00B2A9" rx="2"/>
+                </g>
+              </g>
+              <!-- X axis labels -->
+              <text x="108" y="200" fill="#6A737C" font-size="11" text-anchor="middle">Mar</text>
+              <text x="208" y="200" fill="#6A737C" font-size="11" text-anchor="middle">Apr</text>
+              <text x="308" y="200" fill="#6A737C" font-size="11" text-anchor="middle">May</text>
+              <text x="408" y="200" fill="#6A737C" font-size="11" text-anchor="middle">Jun</text>
+              <text x="508" y="200" fill="#6A737C" font-size="11" text-anchor="middle">Jul</text>
+              <text x="608" y="200" fill="#6A737C" font-size="11" text-anchor="middle">Aug</text>
+
+              <!-- Animated WIN callout on Aug -->
+              <g class="traj-callout animate traj-anim">
+                <rect x="556" y="0" width="104" height="20" rx="10" fill="#007C89"/>
+                <text x="608" y="14" fill="#fff" font-size="11" font-weight="700" text-anchor="middle">↑ Your target</text>
+              </g>
+            </svg>
+          </div>
+          <div class="legend-line">
+            <span><span class="swatch" style="background:#0070D2"></span>Import</span>
+            <span><span class="swatch" style="background:#A78BFA"></span>Sign-up form</span>
+            <span><span class="swatch" style="background:#EC4899"></span>Shopify</span>
+            <span><span class="swatch" style="background:#00B2A9"></span>Meta lead ads</span>
+          </div>
+        </div>
+
+        <!-- ===== What's changed ===== -->
+        <div class="card" data-widget="aud-changed">
+          <span class="pill industry card-sample-tag">INDUSTRY DATA</span>
+          <div class="card-h">
+            <div class="card-h-left">
+              <h3 class="card-title">What's changed</h3>
+              <p class="card-subtitle">Net subscription growth · You vs. peer top-quartile</p>
+            </div>
+            <div class="card-h-right">
+              <div class="toggle-group"><span>Day</span><span>Week</span><span class="active">Month</span></div>
+            </div>
+          </div>
+
+          <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; margin-top: 8px;">
+            <div>
+              <div style="font-size: 12px; color: var(--mc-text-secondary); margin-bottom: 4px;">Your net growth</div>
+              <div style="display: flex; align-items: baseline; gap: 8px;"><strong style="font-size: 26px;">0</strong><span class="metric-delta" style="color: var(--mc-text-muted);">vs. last year</span></div>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: var(--mc-text-secondary); margin-bottom: 4px;">Industry median</div>
+              <div style="display: flex; align-items: baseline; gap: 8px;"><strong style="font-size: 26px; color: var(--bench-subtle-teal);">+47</strong><span style="font-size: 12px; color: var(--bench-subtle-teal);">/ month</span></div>
+            </div>
+            <div>
+              <div style="font-size: 12px; color: var(--mc-text-secondary); margin-bottom: 4px;">Top 25% peers</div>
+              <div style="display: flex; align-items: baseline; gap: 8px;"><strong style="font-size: 26px; color: var(--mc-up);">+128</strong><span style="font-size: 12px; color: var(--mc-up);">/ month</span></div>
+            </div>
+          </div>
+
+          <!-- Daily bars showing 0 yours, gray industry, dashed your projected -->
+          <div class="chart-svg-wrap" style="height: 140px; margin-top: 16px;">
+            <svg viewBox="0 0 700 140" preserveAspectRatio="xMidYMid meet">
+              <line x1="0" y1="120" x2="700" y2="120" stroke="#241C15" stroke-width="1"/>
+              <!-- Industry baseline as gray bars -->
+              <g>
+                <rect x="20"  y="100" width="14" height="20" fill="#d6dadf" rx="2"/>
+                <rect x="40"  y="95"  width="14" height="25" fill="#d6dadf" rx="2"/>
+                <rect x="60"  y="100" width="14" height="20" fill="#d6dadf" rx="2"/>
+                <rect x="80"  y="92"  width="14" height="28" fill="#d6dadf" rx="2"/>
+                <rect x="100" y="97"  width="14" height="23" fill="#d6dadf" rx="2"/>
+                <rect x="120" y="90"  width="14" height="30" fill="#d6dadf" rx="2"/>
+                <rect x="140" y="98"  width="14" height="22" fill="#d6dadf" rx="2"/>
+                <rect x="160" y="93"  width="14" height="27" fill="#d6dadf" rx="2"/>
+                <rect x="180" y="88"  width="14" height="32" fill="#d6dadf" rx="2"/>
+                <rect x="200" y="95"  width="14" height="25" fill="#d6dadf" rx="2"/>
+                <rect x="220" y="90"  width="14" height="30" fill="#d6dadf" rx="2"/>
+                <rect x="240" y="85"  width="14" height="35" fill="#d6dadf" rx="2"/>
+                <rect x="260" y="92"  width="14" height="28" fill="#d6dadf" rx="2"/>
+                <rect x="280" y="86"  width="14" height="34" fill="#d6dadf" rx="2"/>
+                <rect x="300" y="80"  width="14" height="40" fill="#d6dadf" rx="2"/>
+              </g>
+              <!-- Your bars climbing animated -->
+              <g class="traj-anim">
+                <rect x="320" y="120" width="14" height="0"  fill="#007C89" rx="2"/>
+                <rect x="340" y="118" width="14" height="2"  fill="#007C89" rx="2" opacity="0.85"/>
+                <rect x="360" y="115" width="14" height="5"  fill="#007C89" rx="2" opacity="0.85"/>
+                <rect x="380" y="110" width="14" height="10" fill="#007C89" rx="2" opacity="0.9"/>
+                <rect x="400" y="105" width="14" height="15" fill="#007C89" rx="2" opacity="0.9"/>
+                <rect x="420" y="98"  width="14" height="22" fill="#007C89" rx="2" opacity="0.95"/>
+                <rect x="440" y="92"  width="14" height="28" fill="#007C89" rx="2"/>
+                <rect x="460" y="84"  width="14" height="36" fill="#007C89" rx="2"/>
+                <rect x="480" y="76"  width="14" height="44" fill="#007C89" rx="2"/>
+                <rect x="500" y="68"  width="14" height="52" fill="#007C89" rx="2"/>
+                <rect x="520" y="58"  width="14" height="62" fill="#007C89" rx="2"/>
+                <rect x="540" y="48"  width="14" height="72" fill="#007C89" rx="2"/>
+                <rect x="560" y="40"  width="14" height="80" fill="#007C89" rx="2"/>
+                <rect x="580" y="30"  width="14" height="90" fill="#007C89" rx="2"/>
+                <rect x="600" y="20"  width="14" height="100" fill="#007C89" rx="2"/>
+              </g>
+              <text x="100" y="138" fill="#9099a1" font-size="10" text-anchor="middle">Industry baseline</text>
+              <text x="465" y="138" fill="#007C89" font-size="10" text-anchor="middle" font-weight="600">Your projected — with sign-up form</text>
+              <!-- Animated WIN callout -->
+              <circle class="traj-ripple animate traj-anim" cx="607" cy="20" r="5"/>
+              <circle class="traj-dot animate traj-anim" cx="607" cy="20" r="6"/>
+              <g class="traj-callout animate traj-anim">
+                <rect x="540" y="0" width="160" height="18" rx="9" fill="#007C89"/>
+                <text x="620" y="13" fill="#fff" font-size="10" font-weight="700" text-anchor="middle">↑ +128 / mo · top 25%</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+
+      </div>
+      <!-- /PAGE: Audience analytics -->
 
     </div>
   </div>
@@ -2583,6 +3259,85 @@
   }
 
   // ===========================================================
+  // Page routing
+  // ===========================================================
+  const pageTitles = {
+    home: 'Home',
+    marketing: 'Marketing dashboard',
+    audience: 'Audience analytics'
+  };
+  const pageSubNavMap = {
+    home: 'home',
+    marketing: 'marketing-dashboard',
+    audience: 'audience-analytics'
+  };
+  function setPage(page) {
+    if (!pageTitles[page]) return;
+    document.querySelectorAll('.page-view').forEach(el => {
+      el.classList.toggle('active', el.dataset.page === page);
+    });
+    const titleEl = document.getElementById('page-title');
+    if (titleEl) titleEl.textContent = pageTitles[page];
+
+    // Update sidebar nav active state
+    document.querySelectorAll('.mc-nav a').forEach(a => a.classList.remove('active'));
+    // Top-level: Home gets its own; everything else lights Analytics
+    if (page === 'home') {
+      const homeNav = document.querySelector('.mc-nav a[data-nav="home"]');
+      if (homeNav) homeNav.classList.add('active');
+    } else {
+      const analytics = document.querySelector('.mc-nav a[data-nav="analytics"]');
+      if (analytics) analytics.classList.add('active');
+    }
+    const subKey = pageSubNavMap[page];
+    if (subKey) {
+      const sub = document.querySelector(`.mc-nav a[data-nav="${subKey}"]`);
+      if (sub) sub.classList.add('active');
+    }
+
+    // Reset Maya state for the new page so first widget on the page fires fresh
+    mayaState.activeWidget = null;
+    mayaState.firedThisSession = new Set();
+    document.querySelectorAll('.card.maya-active').forEach(el => el.classList.remove('maya-active'));
+
+    // Re-observe widgets visible on this page (IntersectionObserver re-evaluates)
+    if (mayaPageObserver) {
+      mayaPageObserver.disconnect();
+      observeWidgets();
+    }
+
+    // If on Variant B, soft-restart Maya for the first widget of the new page
+    if (document.body.dataset.variant === 'B') {
+      const firstWidget = document.querySelector(`.page-view.active [data-widget]`);
+      if (firstWidget) {
+        setTimeout(() => {
+          setMayaWidget(firstWidget.dataset.widget);
+          if (mayaState.voiceUnlocked && mayaState.open) {
+            setTimeout(speakCurrent, 400);
+          }
+        }, 250);
+      }
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  let mayaPageObserver = null;
+  function observeWidgets() {
+    const widgets = document.querySelectorAll('.page-view.active [data-widget]');
+    if (!widgets.length || !('IntersectionObserver' in window)) return;
+    const visibility = new Map();
+    mayaPageObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => visibility.set(e.target, e.intersectionRatio));
+      let best = null, bestRatio = 0;
+      visibility.forEach((ratio, el) => { if (ratio > bestRatio) { best = el; bestRatio = ratio; } });
+      if (best && bestRatio > 0.35 && document.body.dataset.variant === 'B') {
+        setMayaWidget(best.dataset.widget);
+      }
+    }, { threshold: [0, 0.35, 0.5, 0.75, 1] });
+    widgets.forEach(w => mayaPageObserver.observe(w));
+  }
+
+  // ===========================================================
   // Maya state
   // ===========================================================
   const mayaState = {
@@ -2690,6 +3445,196 @@
       ],
       segue: "And one more thing…",
       cta: "Send first campaign · Stay clean"
+    },
+
+    // ============== HOME PAGE ==============
+    'home-snapshot': {
+      discussing: "Now discussing: Marketing snapshot",
+      teaser: "Industry sends 3× a week — let's match that",
+      preview: "Beauty brands send 8.9k emails/mo. Tap →",
+      html: `This is a snapshot of what beauty brands like yours look like in a typical month.
+        About <strong>8,940 sends</strong>, a <strong>24.1% open rate</strong>, and <strong>$0.42 per email</strong> in revenue.
+        You haven't sent yet — your numbers fill in here the moment you do.`,
+      voice: [
+        "This is a snapshot of what beauty brands like yours...",
+        "look like in a typical month.",
+        "About eight thousand nine hundred sends...",
+        "a twenty-four percent open rate,",
+        "and forty-two cents per email in revenue.",
+        "You haven't sent yet —",
+        "but your numbers fill in here the moment you do.",
+        "Want me to walk you through your first campaign?"
+      ],
+      segue: "Looking at your snapshot…",
+      cta: "Send first campaign"
+    },
+    'home-audience': {
+      discussing: "Now discussing: Audience",
+      teaser: "Add a sign-up form — peers grow +47/mo",
+      preview: "Industry +47 contacts/mo. Tap →",
+      html: `Here's your audience. <strong>19 contacts</strong> imported, <strong>15 subscribed</strong>.
+        Beauty brands your size add about <strong>47 new contacts a month</strong> — most of that comes from a sign-up form on the store.
+        Your net growth this month is zero. Quick fix: add a form, see contacts roll in.`,
+      voice: [
+        "Here's your audience.",
+        "Nineteen contacts imported,",
+        "fifteen subscribed.",
+        "Beauty brands your size...",
+        "add about forty-seven new contacts a month.",
+        "Most of that comes from a sign-up form on the store.",
+        "Your net growth this month is zero.",
+        "Quick fix: add a form,",
+        "and watch contacts roll in."
+      ],
+      segue: "Speaking of your audience…",
+      cta: "Audience analytics →"
+    },
+    'home-revenue': {
+      discussing: "Now discussing: Revenue",
+      teaser: "Connected stores earn $0.42/email",
+      preview: "Top quartile $0.71. Tap →",
+      html: `Revenue is the prize. Beauty SMBs earn <strong>$0.42 per email</strong> on average; top-quartile peers earn <strong>$0.71</strong>.
+        We can't plot yours yet because there's no store connected. <strong>Shopify takes about 90 seconds</strong>, and the gauge starts moving immediately.`,
+      voice: [
+        "Revenue is the prize.",
+        "Beauty SMBs earn forty-two cents per email...",
+        "on average.",
+        "Top-quartile peers earn seventy-one cents.",
+        "We can't plot yours yet —",
+        "because there's no store connected.",
+        "Shopify takes about ninety seconds.",
+        "And the gauge starts moving immediately."
+      ],
+      segue: "Now, on revenue…",
+      cta: "Connect Shopify"
+    },
+    'home-campaigns': {
+      discussing: "Now discussing: Recent campaigns",
+      teaser: "Pick 3 days this week — let's send",
+      preview: "Top performers send 3×/week. Tap →",
+      html: `Top-performing beauty brands send <strong>3 emails a week</strong> — Tuesday, Thursday, Saturday is a common pattern.
+        Your week is empty. Pick three days, draft a welcome series, and start your sending streak.`,
+      voice: [
+        "Top-performing beauty brands send three emails a week.",
+        "Tuesday, Thursday, Saturday...",
+        "is a common pattern.",
+        "Your week is empty.",
+        "Pick three days,",
+        "draft a welcome series,",
+        "and start your sending streak."
+      ],
+      segue: "And about cadence…",
+      cta: "Create email · 90 seconds"
+    },
+
+    // ============== AUDIENCE ANALYTICS PAGE ==============
+    'aud-overview': {
+      discussing: "Now discussing: Audience Overview",
+      teaser: "Industry: 1,240 contacts — you have 19",
+      preview: "Industry has 1,240 typical contacts. Tap →",
+      html: `Here's where you sit today. <strong>19 contacts</strong>, <strong>15 subscribed</strong>.
+        Industry median for beauty brands your size is <strong>1,240</strong>.
+        That gap closes faster than you'd think — a sign-up form on your store typically adds the first 50 contacts in week one.`,
+      voice: [
+        "Here's where you sit today.",
+        "Nineteen contacts...",
+        "fifteen subscribed.",
+        "The industry median for beauty brands your size...",
+        "is one thousand two hundred and forty.",
+        "That gap closes faster than you'd think.",
+        "A sign-up form on your store...",
+        "typically adds the first fifty contacts...",
+        "in week one."
+      ],
+      segue: "Looking at the bigger picture…",
+      cta: "Add sign-up form"
+    },
+    'aud-contacts-time': {
+      discussing: "Now discussing: Contacts over time",
+      teaser: "Industry climbs to 1,240 — yours is flat",
+      preview: "Top 25% hit 2,800. Tap →",
+      html: `See that flat blue line at 19? That's you, holding steady.
+        The gray curve climbing up is the typical industry trajectory — about <strong>1,240 contacts</strong> by month-end. Top quartile hits <strong>2,800</strong>.
+        With a sign-up form, your trajectory bends to match the dotted teal in about 8–10 weeks.`,
+      voice: [
+        "See that flat blue line at nineteen?",
+        "That's you,",
+        "holding steady.",
+        "The gray curve climbing up...",
+        "is the typical industry trajectory.",
+        "About one thousand two hundred and forty contacts...",
+        "by month-end.",
+        "Top quartile hits two thousand eight hundred.",
+        "With a sign-up form,",
+        "your trajectory bends to match...",
+        "the dotted teal,",
+        "in about eight to ten weeks."
+      ],
+      segue: "On the contacts curve…",
+      cta: "Add sign-up form"
+    },
+    'aud-source-perf': {
+      discussing: "Now discussing: Source performance",
+      teaser: "Sign-up form drives 42% of peer contacts",
+      preview: "Top source: sign-up form. Tap →",
+      html: `Where do beauty brands like yours actually find contacts?
+        <strong>42%</strong> from sign-up forms, <strong>30%</strong> from Shopify connect, <strong>18%</strong> from Meta lead ads, <strong>10%</strong> from Imports.
+        Your only source is Import. Adding a sign-up form unlocks the top channel.`,
+      voice: [
+        "Where do beauty brands like yours...",
+        "actually find contacts?",
+        "Forty-two percent from sign-up forms.",
+        "Thirty percent from Shopify connect.",
+        "Eighteen percent from Meta lead ads.",
+        "And ten percent from imports.",
+        "Your only source is Import.",
+        "Adding a sign-up form...",
+        "unlocks the top channel."
+      ],
+      segue: "Looking at sources…",
+      cta: "Connect Meta Lead Ads"
+    },
+    'aud-source-time': {
+      discussing: "Now discussing: Source performance over time",
+      teaser: "Industry stack grows month over month",
+      preview: "Aug: ~1,500 contacts. Tap →",
+      html: `These stacked bars show how peer beauty brands grow contacts month over month — sign-up form, Shopify, Meta, and Import all stacking up.
+        By August, the typical brand sits around <strong>1,500 contacts</strong>. Your bars are flat for now — let's get the first stack going.`,
+      voice: [
+        "These stacked bars show...",
+        "how peer beauty brands grow contacts...",
+        "month over month.",
+        "Sign-up form, Shopify, Meta, and Import...",
+        "all stacking up.",
+        "By August,",
+        "the typical brand sits...",
+        "around fifteen hundred contacts.",
+        "Your bars are flat for now.",
+        "Let's get the first stack going."
+      ],
+      segue: "And the trend over time…",
+      cta: "Add sign-up form"
+    },
+    'aud-changed': {
+      discussing: "Now discussing: What's changed",
+      teaser: "Top 25% peers grow +128 contacts/mo",
+      preview: "You: 0 / mo · Top 25%: +128. Tap →",
+      html: `Net subscriber growth: yours is <strong>0</strong> this month.
+        Industry median is <strong>+47</strong>, top-quartile peers add <strong>+128</strong>.
+        The gap is real, but it's also one of the easier ones to close — a sign-up form alone usually puts you on the +47 line within 30 days.`,
+      voice: [
+        "Net subscriber growth.",
+        "Yours is zero this month.",
+        "Industry median is plus forty-seven.",
+        "Top-quartile peers add plus one hundred and twenty-eight.",
+        "The gap is real,",
+        "but it's also one of the easier ones to close.",
+        "A sign-up form alone...",
+        "usually puts you on the plus forty-seven line...",
+        "within thirty days."
+      ],
+      segue: "On growth changes…",
+      cta: "Add sign-up form"
     }
   };
 
@@ -2963,32 +3908,15 @@
   }
 
   // ===========================================================
-  // Scroll-sync IntersectionObserver
+  // Init: scroll-sync observer on the active page
   // ===========================================================
   document.addEventListener('DOMContentLoaded', () => {
     const sb = document.getElementById('sample-banner');
     if (sb) sb.style.display = 'flex';
 
     document.body.setAttribute('data-variant', 'A');
+    observeWidgets();
 
-    const widgets = document.querySelectorAll('[data-widget]');
-    if (!widgets.length || !('IntersectionObserver' in window)) return;
-
-    const visibility = new Map();
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(e => visibility.set(e.target, e.intersectionRatio));
-      let best = null, bestRatio = 0;
-      visibility.forEach((ratio, el) => {
-        if (ratio > bestRatio) { best = el; bestRatio = ratio; }
-      });
-      if (best && bestRatio > 0.35 && document.body.dataset.variant === 'B') {
-        setMayaWidget(best.dataset.widget);
-      }
-    }, { threshold: [0, 0.35, 0.5, 0.75, 1] });
-
-    widgets.forEach(w => io.observe(w));
-
-    // Stop speech when user leaves the page / tab
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) stopMayaSpeech();
     });
