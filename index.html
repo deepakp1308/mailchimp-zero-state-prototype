@@ -256,180 +256,6 @@
     background: #FFE9C7;
     display: block;
   }
-
-  /* ============================================================
-     REALISTIC AVATAR COMPONENT (replaces cartoon SVG)
-     Layered: <video> top → <img> photo → <svg> stylized fallback
-     States: idle | speaking | listening | happy | calm
-     ============================================================ */
-  .maya-avatar {
-    position: relative;
-    width: 100%; height: 100%;
-    border-radius: 50%;
-    overflow: hidden;
-    border: 2px solid #fff;
-    box-shadow:
-      0 2px 6px rgba(36,28,21,0.10),
-      inset 0 0 12px rgba(36,28,21,0.04);
-    background: #f3e0c4;
-    display: block;
-    isolation: isolate;
-  }
-
-  /* Layer order (z-index): video=4, photo=3, svg=2, overlays=5 */
-  .maya-avatar-video,
-  .maya-avatar-photo,
-  .maya-avatar-svg {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    object-position: center 32%;
-    border-radius: 50%;
-  }
-  .maya-avatar-video { z-index: 4; opacity: 0; transition: opacity 0.4s; }
-  .maya-avatar-video.ready { opacity: 1; }
-  .maya-avatar-photo { z-index: 3; opacity: 0; transition: opacity 0.4s; }
-  .maya-avatar-photo.ready { opacity: 1; }
-  .maya-avatar-svg   { z-index: 2; }
-
-  /* Photographic overlay — subtle vignette, depth, color grade */
-  .maya-avatar::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: 6;
-    border-radius: 50%;
-    pointer-events: none;
-    background:
-      radial-gradient(circle at 35% 30%, rgba(255,255,255,0.18) 0%, rgba(255,255,255,0) 35%),
-      radial-gradient(circle at 50% 90%, rgba(36,28,21,0.20) 0%, rgba(36,28,21,0) 55%);
-    mix-blend-mode: overlay;
-  }
-
-  /* Idle: subtle head sway + breath */
-  @keyframes mayaIdleSway {
-    0%, 100% { transform: translate(0, 0) rotate(0deg); }
-    25%      { transform: translate(0.4px, -0.6px) rotate(0.3deg); }
-    50%      { transform: translate(-0.2px, 0.4px) rotate(-0.2deg); }
-    75%      { transform: translate(-0.4px, -0.4px) rotate(0.4deg); }
-  }
-  .maya-avatar[data-state="idle"] .maya-avatar-svg,
-  .maya-avatar[data-state="idle"] .maya-avatar-photo {
-    animation: mayaIdleSway 7s ease-in-out infinite;
-  }
-
-  /* Listening: slight forward lean, attentive */
-  .maya-avatar[data-state="listening"] {
-    transform: scale(1.015);
-    transition: transform 0.5s ease-out;
-  }
-  .maya-avatar[data-state="listening"]::before {
-    content: "";
-    position: absolute;
-    inset: -3px;
-    z-index: 7;
-    border-radius: 50%;
-    border: 2px solid rgba(0, 124, 137, 0.35);
-    pointer-events: none;
-    animation: mayaListenPulse 2.4s ease-in-out infinite;
-  }
-  @keyframes mayaListenPulse {
-    0%, 100% { opacity: 0.4; }
-    50%      { opacity: 0.85; }
-  }
-
-  /* Speaking: gentle camera-style bob */
-  @keyframes mayaSpeakBob {
-    0%, 100% { transform: translateY(0) rotate(-0.2deg); }
-    50%      { transform: translateY(-1px) rotate(0.2deg); }
-  }
-  .maya-avatar[data-state="speaking"] .maya-avatar-svg,
-  .maya-avatar[data-state="speaking"] .maya-avatar-photo {
-    animation: mayaSpeakBob 1.6s ease-in-out infinite;
-  }
-
-  /* Happy: soft glow + slight scale */
-  .maya-avatar[data-state="happy"] {
-    box-shadow:
-      0 2px 10px rgba(26, 171, 104, 0.30),
-      0 0 0 3px rgba(26, 171, 104, 0.10),
-      inset 0 0 12px rgba(36,28,21,0.04);
-    transition: box-shadow 0.5s, transform 0.5s;
-    transform: scale(1.02);
-  }
-
-  /* Calm: muted halo, slow breath */
-  .maya-avatar[data-state="calm"] .maya-avatar-svg,
-  .maya-avatar[data-state="calm"] .maya-avatar-photo {
-    animation: mayaIdleSway 11s ease-in-out infinite;
-    filter: brightness(1.02) saturate(0.98);
-  }
-
-  /* Speaking-only mouth/lip-sync overlay (works on top of any layer) */
-  .maya-avatar-mouth-overlay {
-    position: absolute;
-    left: 50%;
-    bottom: 22%;
-    transform: translateX(-50%);
-    width: 18%;
-    height: 6%;
-    z-index: 5;
-    pointer-events: none;
-    background: radial-gradient(ellipse at center, rgba(58, 20, 24, 0.0) 30%, rgba(58, 20, 24, 0) 100%);
-    border-radius: 50%;
-    transition: opacity 0.18s, transform 0.18s;
-    opacity: 0;
-  }
-  .maya-avatar[data-state="speaking"] .maya-avatar-mouth-overlay {
-    opacity: 0.65;
-    background: radial-gradient(ellipse at center,
-                                rgba(58, 20, 24, 0.55) 0%,
-                                rgba(58, 20, 24, 0.30) 40%,
-                                rgba(58, 20, 24, 0) 100%);
-    animation: mouthOverlayPulse 320ms ease-in-out infinite;
-  }
-  @keyframes mouthOverlayPulse {
-    0%, 100% { transform: translateX(-50%) scaleY(0.6); opacity: 0.45; }
-    50%      { transform: translateX(-50%) scaleY(1.4);   opacity: 0.75; }
-  }
-  .maya-avatar[data-state="speaking"].word-pulse .maya-avatar-mouth-overlay {
-    animation: mouthOverlayPulse 200ms ease-out;
-  }
-
-  /* Reduced motion */
-  @media (prefers-reduced-motion: reduce) {
-    .maya-avatar-svg,
-    .maya-avatar-photo,
-    .maya-avatar-video {
-      animation: none !important;
-    }
-    .maya-avatar[data-state="listening"]::before,
-    .maya-avatar[data-state="speaking"] .maya-avatar-mouth-overlay {
-      animation: none !important;
-    }
-  }
-
-  /* Subtle "online" ring around avatar (consistent across states) */
-  .maya-avatar-online-dot {
-    position: absolute;
-    bottom: 4%; right: 8%;
-    width: 12%; height: 12%;
-    background: var(--mc-up);
-    border: 2px solid #fff;
-    border-radius: 50%;
-    z-index: 8;
-    box-shadow: 0 0 0 0 rgba(26, 171, 104, 0.5);
-    animation: onlinePulse 2.4s ease-in-out infinite;
-  }
-  @keyframes onlinePulse {
-    0%, 100% { box-shadow: 0 0 0 0 rgba(26, 171, 104, 0.5); }
-    50%      { box-shadow: 0 0 0 5px rgba(26, 171, 104, 0); }
-  }
-  .maya-avatar[data-size="chip"] .maya-avatar-online-dot { display: none; }
-  .maya-avatar[data-size="chip"]::before,
-  .maya-avatar[data-size="chip"]::after { mix-blend-mode: normal; }
   .freddie-cameo {
     position: absolute;
     bottom: -6px; right: -8px;
@@ -3325,15 +3151,9 @@
   <div class="maya-chip" id="maya-chip" role="button" tabindex="0" aria-expanded="false" onclick="toggleMaya(true)">
     <div class="maya-portrait-wrap" style="width:48px; height:48px;">
       <div class="maya-halo"></div>
-      <!-- Realistic avatar component (chip-size) -->
-      <div class="maya-avatar" id="maya-avatar-chip" data-state="idle" data-size="chip" role="img" aria-label="Maya, your Mailchimp data coach">
-        <video class="maya-avatar-video" id="maya-avatar-chip-video" muted loop playsinline preload="metadata" aria-hidden="true"></video>
-        <img   class="maya-avatar-photo" id="maya-avatar-chip-photo" alt="" aria-hidden="true"/>
-        <svg class="maya-avatar-svg" viewBox="0 0 200 200" aria-hidden="true">
-          <use href="#mayaPortrait"/>
-        </svg>
-        <div class="maya-avatar-mouth-overlay" aria-hidden="true"></div>
-      </div>
+      <svg class="maya-portrait-svg" viewBox="0 0 200 200" style="width:48px; height:48px;" aria-hidden="true">
+        <use href="#mayaPortrait"/>
+      </svg>
     </div>
     <div class="maya-chip-text">
       <strong>✦ Maya</strong> · <span id="maya-chip-teaser">I noticed something about your dashboard</span>
@@ -3348,16 +3168,9 @@
     <div class="maya-card-header">
       <div class="maya-portrait-wrap" id="maya-portrait-wrap">
         <div class="maya-halo"></div>
-        <!-- Realistic avatar component (card-size) -->
-        <div class="maya-avatar" id="maya-avatar-card" data-state="idle" data-size="card" role="img" aria-label="Maya, your Mailchimp data coach. AI-generated avatar.">
-          <video class="maya-avatar-video" id="maya-avatar-card-video" muted loop playsinline preload="metadata" aria-hidden="true"></video>
-          <img   class="maya-avatar-photo" id="maya-avatar-card-photo" alt="" aria-hidden="true"/>
-          <svg class="maya-avatar-svg" viewBox="0 0 200 200" aria-hidden="true">
-            <use href="#mayaPortrait"/>
-          </svg>
-          <div class="maya-avatar-mouth-overlay" aria-hidden="true"></div>
-          <span class="maya-avatar-online-dot" aria-hidden="true"></span>
-        </div>
+        <svg class="maya-portrait-svg" viewBox="0 0 200 200" aria-label="Maya">
+          <use href="#mayaPortrait"/>
+        </svg>
         <div class="freddie-cameo" title="Freddie"></div>
         <!-- Speaking ring indicator -->
         <div class="maya-speaking-ring" id="maya-speaking-ring"></div>
@@ -3890,134 +3703,6 @@
     return u;
   }
 
-  // ===========================================================
-  // MayaAvatar — realistic talking-head avatar component
-  // States: idle | speaking | listening | happy | calm
-  // Layers (z-order): video → photo → svg fallback
-  //
-  // Public API (also exposed as window.MayaAvatar):
-  //   setState(state)            — apply a state to all avatar instances
-  //   speak(text, voiceChunks)   — convenience: set 'speaking' + browser TTS
-  //   connectSDK({provider,...}) — future hook for Tavus/HeyGen/D-ID
-  // ===========================================================
-  const MayaAvatar = (() => {
-    const ALLOWED_STATES = ['idle', 'speaking', 'listening', 'happy', 'calm'];
-    const VIDEO_IDLE_PATH      = 'assets/maya-avatar-realistic.mp4';
-    const VIDEO_SPEAKING_PATH  = 'assets/maya-avatar-speaking.mp4';
-    const PHOTO_PATHS = ['assets/maya-avatar-realistic.webp', 'assets/maya-avatar-realistic.jpg'];
-
-    let currentState = 'idle';
-    let videoIdleAvailable = false;
-    let videoSpeakingAvailable = false;
-    let photoAvailable = false;
-    let resolvedPhotoPath = null;
-
-    function $$() { return document.querySelectorAll('.maya-avatar'); }
-
-    function applyState(state) {
-      if (!ALLOWED_STATES.includes(state)) return;
-      currentState = state;
-      $$().forEach(el => {
-        el.setAttribute('data-state', state);
-        // Swap video source between idle/speaking when both are available
-        const v = el.querySelector('.maya-avatar-video');
-        if (v && videoIdleAvailable) {
-          const want = (state === 'speaking' && videoSpeakingAvailable)
-            ? VIDEO_SPEAKING_PATH : VIDEO_IDLE_PATH;
-          if (v.dataset.currentSrc !== want) {
-            v.src = want;
-            v.dataset.currentSrc = want;
-            v.play().catch(() => {});
-          }
-        }
-      });
-      // Notify listeners (e.g., for telemetry / future SDK)
-      window.dispatchEvent(new CustomEvent('maya:state', { detail: { state } }));
-    }
-
-    function probeAsset(url) {
-      return new Promise(resolve => {
-        const v = document.createElement(url.endsWith('.mp4') ? 'video' : 'img');
-        if (v.tagName === 'VIDEO') {
-          v.muted = true; v.preload = 'metadata';
-          v.onloadedmetadata = () => resolve(true);
-          v.onerror = () => resolve(false);
-        } else {
-          v.onload = () => resolve(true);
-          v.onerror = () => resolve(false);
-        }
-        v.src = url;
-        // Safety timeout for slow/missing assets
-        setTimeout(() => resolve(false), 1500);
-      });
-    }
-
-    async function detectAssets() {
-      videoIdleAvailable = await probeAsset(VIDEO_IDLE_PATH);
-      if (videoIdleAvailable) {
-        videoSpeakingAvailable = await probeAsset(VIDEO_SPEAKING_PATH);
-        $$().forEach(el => {
-          const v = el.querySelector('.maya-avatar-video');
-          if (!v) return;
-          v.src = VIDEO_IDLE_PATH;
-          v.dataset.currentSrc = VIDEO_IDLE_PATH;
-          v.classList.add('ready');
-          v.play().catch(() => {});
-        });
-        return; // Prefer video over photo
-      }
-      // No video — try photo
-      for (const p of PHOTO_PATHS) {
-        if (await probeAsset(p)) {
-          photoAvailable = true;
-          resolvedPhotoPath = p;
-          break;
-        }
-      }
-      if (photoAvailable) {
-        $$().forEach(el => {
-          const img = el.querySelector('.maya-avatar-photo');
-          if (!img) return;
-          img.src = resolvedPhotoPath;
-          img.classList.add('ready');
-        });
-      }
-      // If neither video nor photo, the SVG fallback is already visible.
-    }
-
-    function speak(text, voiceChunks) {
-      // text: visible caption; voiceChunks: array of strings for TTS
-      // We still let the caller drive caption via setMayaScript() below;
-      // here we just kick off speech and flip avatar state.
-      applyState('speaking');
-      const chunks = voiceChunks && voiceChunks.length ? voiceChunks : (text ? [text] : []);
-      if (chunks.length) speakSequence(chunks);
-    }
-
-    function connectSDK(_config) {
-      // Placeholder for Tavus / HeyGen / D-ID integration.
-      // Implementations would replace the <video> src with a streaming URL
-      // or replace the avatar shell with the provider's iframe / WebRTC stream.
-      // Example future signature:
-      //   { provider: 'heygen', apiKey: '...', avatarId: 'maya-v1' }
-      console.info('[MayaAvatar] connectSDK is a placeholder. Provide a real adapter to wire a streaming avatar.');
-    }
-
-    return { setState: applyState, speak, connectSDK, get state() { return currentState; }, detectAssets };
-  })();
-  window.MayaAvatar = MayaAvatar;
-
-  // Pass script + CTA into the visible card without baking it into the avatar.
-  // The card stays purely presentational — this is the data-injection seam.
-  function setMayaScript({ html, voiceChunks, ctaText, discussing, state = 'idle' }) {
-    if (discussing) document.getElementById('maya-discussing').textContent = discussing;
-    if (html) document.getElementById('maya-speech').innerHTML = html;
-    if (ctaText) document.getElementById('maya-cta-text').textContent = ctaText;
-    MayaAvatar.setState(state);
-    return { speak: () => voiceChunks && speakSequence(voiceChunks) };
-  }
-  window.setMayaScript = setMayaScript;
-
   // Sequence a list of text chunks, with a small pause between them, so the synth
   // breathes. Drives mouth via boundary events for in-sync animation.
   let mayaSequenceId = 0;
@@ -4032,21 +3717,17 @@
 
     mayaState.speaking = true;
     card.classList.add('speaking');
-    MayaAvatar.setState('speaking');
     voiceBtn.textContent = '❚❚';
     voiceBtn.setAttribute('aria-label', "Pause Maya's voice");
     voiceStatus.textContent = 'Maya is speaking…';
 
     let i = 0;
     const playNext = () => {
-      if (myId !== mayaSequenceId) return;
+      if (myId !== mayaSequenceId) return; // newer sequence took over
       if (i >= chunks.length) {
+        // done
         mayaState.speaking = false;
         card.classList.remove('speaking');
-        // Smooth state drop: speaking → happy briefly → listening → idle
-        MayaAvatar.setState('happy');
-        setTimeout(() => MayaAvatar.setState('listening'), 1100);
-        setTimeout(() => MayaAvatar.setState('idle'), 2600);
         voiceBtn.textContent = '↻';
         voiceBtn.setAttribute('aria-label', "Replay Maya's voice");
         voiceStatus.textContent = 'Tap ↻ to replay';
@@ -4055,9 +3736,13 @@
       const text = chunks[i++];
       const u = buildUtterance(text, opts);
       if (!u) return;
-      u.onboundary = (ev) => { if (ev.name === 'word') triggerMouthPulse(); };
+      // Mouth pulse on word boundary for better lip-sync feel
+      u.onboundary = (ev) => {
+        if (ev.name === 'word') triggerMouthPulse();
+      };
       u.onend = () => {
         if (myId !== mayaSequenceId) return;
+        // Small natural pause between chunks (varies a bit for organic feel)
         const pause = (text.endsWith('...') || text.endsWith('…')) ? 360 :
                       (text.endsWith('?') || text.endsWith('.')) ? 180 : 120;
         setTimeout(playNext, pause);
@@ -4077,12 +3762,8 @@
     const card = document.getElementById('maya-card');
     if (!card) return;
     card.classList.add('word-pulse');
-    document.querySelectorAll('.maya-avatar').forEach(el => el.classList.add('word-pulse'));
     if (mouthPulseTimer) clearTimeout(mouthPulseTimer);
-    mouthPulseTimer = setTimeout(() => {
-      card.classList.remove('word-pulse');
-      document.querySelectorAll('.maya-avatar').forEach(el => el.classList.remove('word-pulse'));
-    }, 180);
+    mouthPulseTimer = setTimeout(() => card.classList.remove('word-pulse'), 180);
   }
 
   function speakCurrent(opts = {}) {
@@ -4096,12 +3777,11 @@
 
   function stopMayaSpeech() {
     if (!('speechSynthesis' in window)) return;
-    mayaSequenceId++;
+    mayaSequenceId++; // invalidate any in-flight sequence
     window.speechSynthesis.cancel();
     mayaState.speaking = false;
     const card = document.getElementById('maya-card');
     if (card) card.classList.remove('speaking');
-    MayaAvatar.setState('idle');
   }
 
   function tryAutoSpeak() {
@@ -4190,9 +3870,6 @@
     const data = mayaSpeeches[widget];
     if (!data) return;
 
-    // Avatar: brief listening state during the handoff for elegance
-    if (!mayaState.speaking) MayaAvatar.setState('listening');
-
     // Move the teal "she's discussing this" glow with a smooth handoff
     document.querySelectorAll('.card.maya-active').forEach(el => el.classList.remove('maya-active'));
     const target = document.querySelector(`[data-widget="${widget}"]`);
@@ -4239,10 +3916,6 @@
 
     document.body.setAttribute('data-variant', 'A');
     observeWidgets();
-
-    // Detect avatar assets (mp4 / webp / jpg) — falls back gracefully to the SVG.
-    MayaAvatar.detectAssets();
-    MayaAvatar.setState('idle');
 
     document.addEventListener('visibilitychange', () => {
       if (document.hidden) stopMayaSpeech();
