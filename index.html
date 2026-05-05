@@ -342,12 +342,17 @@
   .maya-discussing::before { content: "✦"; }
   .maya-speech {
     font-size: 13px;
-    line-height: 1.55;
+    line-height: 1.6;
     color: var(--mc-text);
-    transition: opacity 0.3s;
+    transition: opacity 0.32s ease-out, transform 0.32s ease-out;
+    transform: translateY(0);
   }
   .maya-speech strong { font-weight: 700; }
-  .maya-speech.swap { opacity: 0; }
+  .maya-speech.swap { opacity: 0; transform: translateY(6px); }
+  .maya-discussing {
+    transition: opacity 0.32s ease-out;
+  }
+  .maya-card.swap-discussing .maya-discussing { opacity: 0; }
   .maya-cta {
     background: var(--mc-teal);
     color: #fff;
@@ -436,19 +441,31 @@
     animation: mayaBreath 3.4s ease-in-out infinite;
   }
 
-  /* Mouth animation when speaking */
-  @keyframes mayaMouthTalk {
-    0%, 100% { rx: 0; ry: 0; opacity: 0; }
-    25%      { rx: 3; ry: 1.5; opacity: 0.9; }
-    50%      { rx: 4; ry: 2.5; opacity: 0.95; }
-    75%      { rx: 2.5; ry: 1; opacity: 0.85; }
+  /* Mouth animation when speaking — word-pulse driven for better lip-sync */
+  @keyframes mayaMouthTalkLoop {
+    0%, 100% { rx: 0.6; ry: 0.6; opacity: 0.55; }
+    25%      { rx: 2.4; ry: 1.4; opacity: 0.85; }
+    50%      { rx: 3.2; ry: 2.2; opacity: 0.92; }
+    75%      { rx: 2.0; ry: 1.0; opacity: 0.8; }
+  }
+  @keyframes mouthWordPulse {
+    0%   { rx: 1.2; ry: 1.0; opacity: 0.7; }
+    35%  { rx: 4.2; ry: 2.8; opacity: 0.95; }
+    100% { rx: 1.2; ry: 0.8; opacity: 0.6; }
   }
   .maya-mouth-open {
     transform-origin: center;
     transform-box: fill-box;
+    rx: 0; ry: 0; opacity: 0;
+    transition: opacity 0.18s;
   }
+  /* Subtle ambient breath of the mouth while speaking, as a fallback */
   .maya-card.speaking .maya-mouth-open {
-    animation: mayaMouthTalk 380ms ease-in-out infinite;
+    animation: mayaMouthTalkLoop 520ms ease-in-out infinite;
+  }
+  /* On each word boundary, override with a discrete pulse */
+  .maya-card.speaking.word-pulse .maya-mouth-open {
+    animation: mouthWordPulse 200ms ease-out;
   }
   /* Slight lower-lip drop while speaking */
   @keyframes mayaLipLower {
@@ -458,7 +475,10 @@
   .maya-card.speaking .maya-lip-lower {
     transform-origin: center;
     transform-box: fill-box;
-    animation: mayaLipLower 380ms ease-in-out infinite;
+    animation: mayaLipLower 520ms ease-in-out infinite;
+  }
+  .maya-card.speaking.word-pulse .maya-lip-lower {
+    animation: mayaLipLower 200ms ease-out;
   }
   /* Show teeth hint while speaking */
   @keyframes mayaTeethShow {
@@ -2240,6 +2260,38 @@
 
         <!-- Chin shadow -->
         <ellipse cx="100" cy="134" rx="6" ry="2" fill="#A87357" opacity="0.18"/>
+
+        <!-- ===== Realism polish overlays ===== -->
+        <!-- Forehead highlight (catchlight from above) -->
+        <ellipse cx="100" cy="68" rx="14" ry="6" fill="#fff" opacity="0.12"/>
+        <!-- Cheekbone highlights -->
+        <ellipse cx="80" cy="100" rx="4" ry="2.5" fill="#fff" opacity="0.18"/>
+        <ellipse cx="120" cy="100" rx="4" ry="2.5" fill="#fff" opacity="0.18"/>
+        <!-- Nose-bridge highlight -->
+        <path d="M 99 92 L 99 108" stroke="#fff" stroke-width="1.4" opacity="0.2" stroke-linecap="round"/>
+        <!-- Philtrum (subtle indent above lips) -->
+        <path d="M 99 117 L 99 122" stroke="#A87357" stroke-width="0.6" opacity="0.4" stroke-linecap="round"/>
+        <path d="M 101 117 L 101 122" stroke="#A87357" stroke-width="0.6" opacity="0.4" stroke-linecap="round"/>
+        <!-- Hair strand highlights, asymmetric -->
+        <path d="M 70 56 Q 80 50, 96 50" stroke="#A06B47" stroke-width="1.2" opacity="0.55" fill="none" stroke-linecap="round"/>
+        <path d="M 108 50 Q 120 52, 128 60" stroke="#A06B47" stroke-width="1.2" opacity="0.5" fill="none" stroke-linecap="round"/>
+        <path d="M 76 76 Q 84 72, 92 72" stroke="#7A4A2E" stroke-width="0.8" opacity="0.6" fill="none" stroke-linecap="round"/>
+        <!-- Soft fly-away strand near temple -->
+        <path d="M 64 84 Q 60 80, 58 76" stroke="#3D2113" stroke-width="0.8" opacity="0.7" fill="none" stroke-linecap="round"/>
+        <!-- Eye corner shadows for depth -->
+        <path d="M 80 92 Q 82 94, 84 94" stroke="#7d5238" stroke-width="0.7" opacity="0.4" fill="none" stroke-linecap="round"/>
+        <path d="M 116 94 Q 118 94, 120 92" stroke="#7d5238" stroke-width="0.7" opacity="0.4" fill="none" stroke-linecap="round"/>
+        <!-- Asymmetric brow lift hint (slightly raised right brow — adds personality) -->
+        <path d="M 106 80 Q 114 75, 122 79" stroke="#2A1409" stroke-width="0.6" opacity="0.55" fill="none" stroke-linecap="round"/>
+        <!-- Lip definition: cupid's bow -->
+        <path d="M 98 122 L 100 121 L 102 122" stroke="#923F45" stroke-width="0.6" opacity="0.7" fill="none" stroke-linecap="round"/>
+        <!-- Lip outline shadow -->
+        <path d="M 90 124 Q 100 130, 110 124" stroke="#5e2128" stroke-width="0.5" opacity="0.45" fill="none"/>
+        <!-- Subtle warmth on neck (catchlight) -->
+        <ellipse cx="100" cy="148" rx="6" ry="3" fill="#fff" opacity="0.08"/>
+        <!-- Earring on left ear (light catch) -->
+        <circle cx="64" cy="104" r="1.2" fill="#D4AF37" opacity="0.85"/>
+        <circle cx="136" cy="104" r="1.2" fill="#D4AF37" opacity="0.85"/>
       </symbol>
     </defs>
   </svg>
@@ -2372,18 +2424,33 @@
 
   // Conversational warm-coach scripts (separate from HTML for cleaner TTS)
   // Each speech: hook → benchmark → personal nudge → CTA-flavor close.
+  // Each speech is broken into short natural breath-units.
+  // Each chunk plays as its own utterance with a small pause in between,
+  // which sounds dramatically warmer than one long blob from browser TTS.
+  // `segue` is a soft transition phrase used when scroll-swapping between widgets.
   const mayaSpeeches = {
     monitor: {
       discussing: "Now discussing: Monitor performance",
       teaser: "Your 15 subscribers are warm — let's send",
       preview: "Beauty brands hit 24.1% open rate. Tap →",
-      html: `Hey — I noticed you've already imported <strong>15 subscribers</strong>. That's a clean little starter list, and honestly, that's the hardest part.
-        Here's what's interesting: beauty brands your size hit a <strong>24.1% open rate</strong> just by sending three times a week.
-        You haven't sent anything yet — but the moment you do, your numbers start filling in right next to the industry median.`,
-      voice: `Hey, I noticed you've already imported 15 subscribers. That's a clean little starter list, and honestly, that's the hardest part.
-        Here's what's interesting. Beauty brands your size hit a 24.1 percent open rate just by sending three times a week.
-        You haven't sent anything yet, but the moment you do, your numbers start filling in right next to the industry median.
-        Want to send your first campaign? It'll take about ninety seconds.`,
+      html: `Hey there. I noticed you've imported <strong>15 subscribers</strong> already.
+        That's a clean little starter list — and honestly, that's the hardest part done.
+        Here's what's interesting: beauty brands your size hit a <strong>24.1% open rate</strong> by sending about three times a week.
+        You haven't sent anything yet… but the moment you do, your numbers start filling in right next to the industry median.`,
+      voice: [
+        "Hey there.",
+        "I noticed you've imported fifteen subscribers already.",
+        "That's a clean little starter list...",
+        "and honestly, that's the hardest part done.",
+        "Here's what's interesting:",
+        "beauty brands your size hit a twenty-four percent open rate...",
+        "just by sending about three times a week.",
+        "You haven't sent anything yet...",
+        "but the moment you do,",
+        "your numbers start filling in,",
+        "right next to the industry median."
+      ],
+      segue: "Okay, looking at this card now.",
       cta: "Send first campaign · 90 seconds"
     },
     performance: {
@@ -2393,23 +2460,39 @@
       html: `Look at that dotted teal line swooping up — that's where the <strong>top 25% of beauty SMBs</strong> land. <strong>5.6% click rate</strong>.
         Your trajectory plots in real time once you send. Most peers cross the industry median by send number three.
         You don't need to be a marketer to get there — you just need to start.`,
-      voice: `Take a look at that dotted teal line swooping up. That's where the top 25 percent of beauty brands like yours land — a 5.6 percent click rate.
-        Your trajectory plots in real time once you send. Most peers cross the industry median by send number three.
-        You don't need to be a marketer to get there. You just need to start.
-        Send your first campaign, and let's aim for that 5.6.`,
+      voice: [
+        "Take a look at that dotted teal line, swooping up.",
+        "That's where the top twenty-five percent of beauty brands land...",
+        "a five point six percent click rate.",
+        "Your own trajectory plots in real time, once you send.",
+        "Most peers cross the industry median...",
+        "by send number three.",
+        "You don't need to be a marketer to get there.",
+        "You just need to start.",
+        "So... let's aim for that five point six."
+      ],
+      segue: "And while we're here…",
       cta: "Send first campaign · Aim for 5.6%"
     },
     conversions: {
       discussing: "Now discussing: Conversions",
       teaser: "Funnel is empty? Connect Shopify",
       preview: "Connected stores earn $0.42/email. Tap →",
-      html: `Here's the thing about this funnel — it's empty because we're not yet connected to your store.
+      html: `Here's the thing about this funnel — it's empty because we're not connected to your store yet.
         Beauty brands earning <strong>$0.42 per email</strong> all share one thing: a connected Shopify. The top quartile? They earn <strong>$0.71</strong>.
         Connecting takes about ninety seconds. The minute you do, this funnel populates with your real numbers.`,
-      voice: `Here's the thing about this funnel. It's empty because we're not yet connected to your store.
-        Beauty brands earning 42 cents per email all share one thing: a connected Shopify. The top quartile? They earn 71 cents.
-        Connecting takes about ninety seconds. The minute you do, this funnel populates with your real numbers.
-        Want to plug it in?`,
+      voice: [
+        "Now... here's the thing about this funnel.",
+        "It's empty because we're not connected to your store yet.",
+        "Beauty brands earning forty-two cents per email...",
+        "all share one thing: a connected Shopify.",
+        "The top quartile? They earn seventy-one cents.",
+        "Connecting takes about ninety seconds.",
+        "And the minute you do,",
+        "this funnel populates with your real numbers.",
+        "Shall we plug it in?"
+      ],
+      segue: "Speaking of revenue…",
       cta: "Connect Shopify · See your funnel"
     },
     delivery: {
@@ -2419,10 +2502,18 @@
       html: `One thing you don't need to worry about — your delivery health.
         Your <strong>15 opted-in subscribers</strong> are clean, so when you send, you'll almost certainly land above <strong>99.7%</strong>. That's the green zone.
         Most peers stress about this. You're starting from a good place.`,
-      voice: `One thing you don't need to worry about — your delivery health.
-        Your 15 opted-in subscribers are clean, so when you send, you'll almost certainly land above 99.7 percent. That's the green zone.
-        Most peers stress about this. You're starting from a good place.
-        Go ahead and send. Stay clean.`,
+      voice: [
+        "One thing you don't need to worry about...",
+        "your delivery health.",
+        "Your fifteen opted-in subscribers are clean,",
+        "so when you send,",
+        "you'll almost certainly land above ninety-nine point seven percent.",
+        "That's the green zone.",
+        "Most peers stress about this.",
+        "You? You're starting from a good place.",
+        "Just go ahead and send."
+      ],
+      segue: "And one more thing…",
       cta: "Send first campaign · Stay clean"
     }
   };
@@ -2434,19 +2525,35 @@
     if (!('speechSynthesis' in window)) return;
     const voices = window.speechSynthesis.getVoices();
     if (!voices.length) return;
-    // Prefer English female voices in this priority order
+    // Strict preference: warmer, more natural-sounding female English voices first.
+    // Apple "Samantha (Premium/Enhanced)" and Microsoft "Online (Natural)" are
+    // dramatically warmer than the older Zira/Karen voices.
     const preferred = [
-      'Samantha', 'Google US English', 'Microsoft Aria Online (Natural)',
-      'Microsoft Jenny Online (Natural)', 'Microsoft Zira',
-      'Karen', 'Moira', 'Tessa', 'Allison', 'Ava'
+      'Microsoft Aria Online (Natural)',
+      'Microsoft Jenny Online (Natural)',
+      'Microsoft Sonia Online (Natural)',
+      'Microsoft Ana Online (Natural)',
+      'Google UK English Female',
+      'Google US English',
+      'Samantha (Enhanced)',
+      'Samantha (Premium)',
+      'Samantha',
+      'Ava (Premium)',
+      'Ava',
+      'Allison',
+      'Susan',
+      'Karen',
+      'Moira',
+      'Tessa',
+      'Microsoft Zira'
     ];
     let chosen = null;
     for (const name of preferred) {
-      chosen = voices.find(v => v.name.includes(name) && v.lang.startsWith('en'));
+      chosen = voices.find(v => v.name === name) ||
+               voices.find(v => v.name.includes(name));
       if (chosen) break;
     }
     if (!chosen) {
-      // Fall back: any en-US voice that sounds female (heuristic)
       chosen = voices.find(v => v.lang === 'en-US' && /female|woman/i.test(v.name)) ||
                voices.find(v => v.lang === 'en-US') ||
                voices.find(v => v.lang.startsWith('en')) ||
@@ -2461,49 +2568,96 @@
     window.speechSynthesis.onvoiceschanged = loadVoices;
   }
 
-  function buildUtterance(text) {
+  // Track sequencing across multiple chunks so we can soft-stop / segue cleanly
+  function buildUtterance(text, opts = {}) {
     if (!('speechSynthesis' in window)) return null;
     const u = new SpeechSynthesisUtterance(text);
-    u.rate = 0.96;
-    u.pitch = 1.05;
+    // Tuned for warmer-sounding browser TTS:
+    // - rate 0.92 = slightly slower than default, more soothing
+    // - pitch 1.08 = a touch warmer/feminine
+    u.rate = opts.rate ?? 0.92;
+    u.pitch = opts.pitch ?? 1.08;
     u.volume = 1;
     if (mayaState.chosenVoice) u.voice = mayaState.chosenVoice;
     u.lang = mayaState.chosenVoice?.lang || 'en-US';
-    u.onstart = () => {
-      mayaState.speaking = true;
-      document.getElementById('maya-card').classList.add('speaking');
-      document.getElementById('maya-voice-btn').textContent = '❚❚';
-      document.getElementById('maya-voice-btn').setAttribute('aria-label', 'Pause Maya\'s voice');
-      document.getElementById('maya-voice-status').textContent = 'Maya is speaking…';
-    };
-    u.onend = () => {
-      mayaState.speaking = false;
-      document.getElementById('maya-card').classList.remove('speaking');
-      document.getElementById('maya-voice-btn').textContent = '↻';
-      document.getElementById('maya-voice-btn').setAttribute('aria-label', 'Replay Maya\'s voice');
-      document.getElementById('maya-voice-status').textContent = 'Tap ↻ to replay';
-    };
-    u.onerror = u.onend;
     return u;
   }
 
-  function speakCurrent() {
+  // Sequence a list of text chunks, with a small pause between them, so the synth
+  // breathes. Drives mouth via boundary events for in-sync animation.
+  let mayaSequenceId = 0;
+  function speakSequence(chunks, opts = {}) {
+    if (!('speechSynthesis' in window) || !chunks || !chunks.length) return;
+    const myId = ++mayaSequenceId;
+    window.speechSynthesis.cancel();
+
+    const card = document.getElementById('maya-card');
+    const voiceBtn = document.getElementById('maya-voice-btn');
+    const voiceStatus = document.getElementById('maya-voice-status');
+
+    mayaState.speaking = true;
+    card.classList.add('speaking');
+    voiceBtn.textContent = '❚❚';
+    voiceBtn.setAttribute('aria-label', "Pause Maya's voice");
+    voiceStatus.textContent = 'Maya is speaking…';
+
+    let i = 0;
+    const playNext = () => {
+      if (myId !== mayaSequenceId) return; // newer sequence took over
+      if (i >= chunks.length) {
+        // done
+        mayaState.speaking = false;
+        card.classList.remove('speaking');
+        voiceBtn.textContent = '↻';
+        voiceBtn.setAttribute('aria-label', "Replay Maya's voice");
+        voiceStatus.textContent = 'Tap ↻ to replay';
+        return;
+      }
+      const text = chunks[i++];
+      const u = buildUtterance(text, opts);
+      if (!u) return;
+      // Mouth pulse on word boundary for better lip-sync feel
+      u.onboundary = (ev) => {
+        if (ev.name === 'word') triggerMouthPulse();
+      };
+      u.onend = () => {
+        if (myId !== mayaSequenceId) return;
+        // Small natural pause between chunks (varies a bit for organic feel)
+        const pause = (text.endsWith('...') || text.endsWith('…')) ? 360 :
+                      (text.endsWith('?') || text.endsWith('.')) ? 180 : 120;
+        setTimeout(playNext, pause);
+      };
+      u.onerror = u.onend;
+      try {
+        window.speechSynthesis.speak(u);
+      } catch (_) {}
+    };
+    playNext();
+  }
+
+  // Mouth pulse: briefly enlarge the mouth-open ellipse on each word boundary.
+  // Falls back to the CSS rhythmic loop if boundary events aren't fired.
+  let mouthPulseTimer = null;
+  function triggerMouthPulse() {
+    const card = document.getElementById('maya-card');
+    if (!card) return;
+    card.classList.add('word-pulse');
+    if (mouthPulseTimer) clearTimeout(mouthPulseTimer);
+    mouthPulseTimer = setTimeout(() => card.classList.remove('word-pulse'), 180);
+  }
+
+  function speakCurrent(opts = {}) {
     if (!('speechSynthesis' in window)) return;
     if (!mayaState.activeWidget) mayaState.activeWidget = 'monitor';
-    const text = mayaSpeeches[mayaState.activeWidget].voice;
-    window.speechSynthesis.cancel();
-    const u = buildUtterance(text);
-    if (!u) return;
-    mayaState.currentUtterance = u;
-    try {
-      window.speechSynthesis.speak(u);
-    } catch (e) {
-      // ignore — autoplay may be blocked
-    }
+    const data = mayaSpeeches[mayaState.activeWidget];
+    const chunks = Array.isArray(data.voice) ? data.voice.slice() : [data.voice];
+    if (opts.segueWith) chunks.unshift(opts.segueWith);
+    speakSequence(chunks, opts);
   }
 
   function stopMayaSpeech() {
     if (!('speechSynthesis' in window)) return;
+    mayaSequenceId++; // invalidate any in-flight sequence
     window.speechSynthesis.cancel();
     mayaState.speaking = false;
     const card = document.getElementById('maya-card');
@@ -2591,14 +2745,17 @@
 
   function setMayaWidget(widget) {
     if (widget === mayaState.activeWidget) return;
+    const previousWidget = mayaState.activeWidget;
     mayaState.activeWidget = widget;
     const data = mayaSpeeches[widget];
     if (!data) return;
 
+    // Move the teal "she's discussing this" glow with a smooth handoff
     document.querySelectorAll('.card.maya-active').forEach(el => el.classList.remove('maya-active'));
     const target = document.querySelector(`[data-widget="${widget}"]`);
     if (target) target.classList.add('maya-active');
 
+    // Crossfade speech caption (slightly longer fade for elegance)
     const speechEl = document.getElementById('maya-speech');
     speechEl.classList.add('swap');
     setTimeout(() => {
@@ -2606,7 +2763,7 @@
       speechEl.innerHTML = data.html;
       document.getElementById('maya-cta-text').textContent = data.cta;
       speechEl.classList.remove('swap');
-    }, 220);
+    }, 320);
 
     document.getElementById('maya-chip-teaser').textContent = data.teaser;
     document.getElementById('maya-chip-preview').textContent = data.preview;
@@ -2619,9 +2776,14 @@
     }
     mayaState.firedThisSession.add(widget);
 
-    // If currently expanded and voice was unlocked, auto-speak the new context
+    // If expanded + voice unlocked, soft-stop the current speech and pick up
+    // the new one with a connecting segue phrase ("And while we're here…")
     if (mayaState.open && mayaState.voiceUnlocked && document.body.dataset.variant === 'B') {
-      setTimeout(speakCurrent, 280);
+      const segue = previousWidget && data.segue ? data.segue : null;
+      stopMayaSpeech();
+      // Wait long enough for the SpeechSynthesis cancel to settle in Chrome,
+      // then play with the segue prefix so it feels conversational
+      setTimeout(() => speakCurrent({ segueWith: segue }), 450);
     }
   }
 
